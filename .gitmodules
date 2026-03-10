@@ -1,0 +1,3 @@
+[submodule "conf/blog"]
+	path = conf/blog
+	url = git@github.com:kijuky/blog.git
