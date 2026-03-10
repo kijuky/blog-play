@@ -1,0 +1,131 @@
+package services
+
+import org.virtuslab.yaml.*
+import scalikejdbc.DB
+import scalikejdbc.SQL
+
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import scala.util.{Try, Using}
+import scala.jdk.CollectionConverters.*
+
+object BlogImporter {
+  sealed trait ImportError extends Product with Serializable
+  private object ImportError {
+    final case class MissingBody(path: Path) extends ImportError
+    final case class MissingRoot(path: Path) extends ImportError
+    final case class IoError(path: Path, cause: Throwable) extends ImportError
+    final case class ParseError(path: Path, message: String) extends ImportError
+  }
+
+  private final case class Meta(
+      title: Option[String],
+      published_at: Option[String],
+      modified_at: Option[String],
+      tags: Option[Seq[String]]
+  ) derives YamlDecoder
+
+  def importAllEither(root: Path): Either[ImportError, Unit] = {
+    filesUnder(root)
+      .map(_.filter(_.getFileName.toString == "meta.yaml"))
+      .flatMap(runImportTx(root, _))
+  }
+
+  private def runImportTx(root: Path, metaFiles: Seq[Path]): Either[ImportError, Unit] = {
+    DB.localTx { case given scalikejdbc.DBSession =>
+      metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
+        acc.flatMap { _ =>
+            readMeta(metaPath).flatMap { meta =>
+            readBody(metaPath).map { body =>
+              val source = resolveSource(root, metaPath)
+              val postId = upsertPost(meta, body, source)
+              meta.tags.getOrElse(Nil).foreach { tag =>
+                val tagId = findTagId(tag).getOrElse(insertTag(tag))
+                insertPostTag(postId, tagId)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private def upsertPost(meta: Meta, body: String, source: String)(using session: scalikejdbc.DBSession): Long = {
+    val title = meta.title.getOrElse("")
+    findPostId(title, source).getOrElse {
+      SQL(
+        """
+          |insert into posts (title, body, published_at, modified_at, source)
+          |values (?, ?, ?, ?, ?)
+          |""".stripMargin
+      ).bind(title, body, meta.published_at.orNull, meta.modified_at.orNull, source)
+        .updateAndReturnGeneratedKey
+        .apply()
+    }
+  }
+
+  private def insertTag(name: String)(using session: scalikejdbc.DBSession): Long = {
+    SQL("insert into tags (name) values (?)")
+      .bind(name)
+      .updateAndReturnGeneratedKey
+      .apply()
+  }
+
+  private def insertPostTag(postId: Long, tagId: Long)(using session: scalikejdbc.DBSession): Unit = {
+    SQL("insert or ignore into post_tags (post_id, tag_id) values (?, ?)")
+      .bind(postId, tagId)
+      .update
+      .apply()
+  }
+
+  private def readMeta(path: Path): Either[ImportError, Meta] = {
+    val text = Files.readString(path, StandardCharsets.UTF_8)
+    text.as[Meta].left.map(error => ImportError.ParseError(path, error.toString))
+  }
+
+  private def readBody(metaPath: Path): Either[ImportError, String] = {
+    val readmePath = metaPath.getParent.resolve("README.md")
+    if (!Files.exists(readmePath)) {
+      Left(ImportError.MissingBody(readmePath))
+    } else {
+      Try(Files.readString(readmePath, StandardCharsets.UTF_8))
+        .toEither.left.map(ImportError.IoError(readmePath, _))
+    }
+  }
+
+  private def findPostId(title: String, source: String)(using session: scalikejdbc.DBSession): Option[Long] = {
+    SQL("select id from posts where title = ? and source = ? limit 1")
+      .bind(title, source)
+      .map(_.long("id"))
+      .single
+      .apply()
+  }
+
+  private def findTagId(name: String)(using session: scalikejdbc.DBSession): Option[Long] = {
+    SQL("select id from tags where name = ? limit 1")
+      .bind(name)
+      .map(_.long("id"))
+      .single
+      .apply()
+  }
+
+  private def resolveSource(root: Path, metaPath: Path): String = {
+    val relative = root.relativize(metaPath).toString.replace('\\', '/')
+    val parts = relative.split("/").toList.filter(_.nonEmpty)
+
+    parts match {
+      case "00_archive" :: source :: _ => source
+      case _ => "github"
+    }
+  }
+
+  private def filesUnder(root: Path): Either[ImportError, Seq[Path]] = {
+    if (!Files.exists(root)) {
+      Left(ImportError.MissingRoot(root))
+    } else {
+      Using(Files.walk(root))(_.toList.asScala.toSeq)
+        .toEither.left.map(ImportError.IoError(root, _))
+    }
+  }
+}
