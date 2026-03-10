@@ -6,6 +6,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
 import play.twirl.api.Html
 import scalikejdbc.DB
+import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
 final case class BlogItem(
@@ -35,7 +36,7 @@ object BlogItem {
 class BlogShowController(cc: ControllerComponents) extends AbstractController(cc) {
 
   def show(id: Long): Action[AnyContent] = Action {
-    val postOpt = DB.autoCommit { case given scalikejdbc.DBSession =>
+    val postOpt = DB.autoCommit { case given DBSession =>
       SQL("select id, title, body, published_at, modified_at from blogs where id = ? limit 1")
         .bind(id)
         .map { rs =>

@@ -5,6 +5,7 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
 import scalikejdbc.DB
+import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
 final case class BlogListItem(
@@ -32,7 +33,7 @@ object BlogListViewItem {
 
 class BlogListController(cc: ControllerComponents) extends AbstractController(cc) {
   def list(): Action[AnyContent] = Action {
-    val items = DB.autoCommit { case given scalikejdbc.DBSession =>
+    val items = DB.autoCommit { case given DBSession =>
       SQL("select id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc")
         .map { rs =>
           BlogListItem(

@@ -2,6 +2,7 @@ package services
 
 import org.virtuslab.yaml.*
 import scalikejdbc.DB
+import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
 import java.nio.charset.StandardCharsets
@@ -35,7 +36,7 @@ object BlogImporter {
   }
 
   private def runImportTx(root: Path, metaFiles: Seq[Path]): Either[ImportError, Unit] = {
-    DB.localTx { case given scalikejdbc.DBSession =>
+    DB.localTx { case given DBSession =>
       val markdown = new MarkdownRenderer(root)
       metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
         acc.flatMap { _ =>
@@ -66,7 +67,7 @@ object BlogImporter {
       source: String,
       publishedAt: Option[String],
       modifiedAt: Option[String]
-  )(using session: scalikejdbc.DBSession): Long = {
+  )(using session: DBSession): Long = {
     val title = meta.title.getOrElse("")
     SQL(
       """
@@ -78,14 +79,14 @@ object BlogImporter {
       .apply()
   }
 
-  private def insertTag(name: String)(using session: scalikejdbc.DBSession): Long = {
+  private def insertTag(name: String)(using session: DBSession): Long = {
     SQL("insert into tags (name) values (?)")
       .bind(name)
       .updateAndReturnGeneratedKey
       .apply()
   }
 
-  private def insertBlogTag(blogId: Long, tagId: Long)(using session: scalikejdbc.DBSession): Unit = {
+  private def insertBlogTag(blogId: Long, tagId: Long)(using session: DBSession): Unit = {
     SQL("insert or ignore into blog_tags (blog_id, tag_id) values (?, ?)")
       .bind(blogId, tagId)
       .update
@@ -128,7 +129,7 @@ object BlogImporter {
       .toOption
   }
 
-  private def findTagId(name: String)(using session: scalikejdbc.DBSession): Option[Long] = {
+  private def findTagId(name: String)(using session: DBSession): Option[Long] = {
     SQL("select id from tags where name = ? limit 1")
       .bind(name)
       .map(_.long("id"))
