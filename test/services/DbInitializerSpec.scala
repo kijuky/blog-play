@@ -28,9 +28,9 @@ class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
         .list
         .apply()
 
-      assert(tables.contains("posts"))
+      assert(tables.contains("blogs"))
       assert(tables.contains("tags"))
-      assert(tables.contains("post_tags"))
+      assert(tables.contains("blog_tags"))
     }
   }
 }

@@ -6,6 +6,9 @@
 target/
 project/target/
 project/project/
+.sbt/
+.ivy2/
+.coursier/
 
 # IDE
 .idea/

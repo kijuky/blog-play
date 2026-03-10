@@ -30,12 +30,12 @@ class BlogImporterSpec extends AnyFunSuite with BeforeAndAfterAll {
     ConnectionPool.closeAll()
   }
 
-  test("importAllEither imports posts and tags") {
+  test("importAllEither imports blogs and tags") {
     val result = BlogImporter.importAllEither(blogRoot)
     assert(result.isRight)
 
     DB.autoCommit { case given scalikejdbc.DBSession =>
-      val postCount = SQL("select count(*) as c from posts")
+      val blogCount = SQL("select count(*) as c from blogs")
         .map(_.int("c"))
         .single
         .apply()
@@ -47,13 +47,13 @@ class BlogImporterSpec extends AnyFunSuite with BeforeAndAfterAll {
         .apply()
         .getOrElse(0)
 
-      val linkCount = SQL("select count(*) as c from post_tags")
+      val linkCount = SQL("select count(*) as c from blog_tags")
         .map(_.int("c"))
         .single
         .apply()
         .getOrElse(0)
 
-      assert(postCount == 1)
+      assert(blogCount == 1)
       assert(tagCount == 2)
       assert(linkCount == 2)
     }

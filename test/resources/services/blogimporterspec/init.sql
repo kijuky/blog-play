@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS post_tags;
+DROP TABLE IF EXISTS blog_tags;
 DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS blogs;
 
-CREATE TABLE posts (
+CREATE TABLE blogs (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE tags (
   name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE post_tags (
-  post_id INTEGER NOT NULL,
+CREATE TABLE blog_tags (
+  blog_id INTEGER NOT NULL,
   tag_id INTEGER NOT NULL,
-  UNIQUE(post_id, tag_id)
+  UNIQUE(blog_id, tag_id)
 );

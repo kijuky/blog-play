@@ -48,10 +48,10 @@ object BlogImporter {
               val source = resolveSource(root, metaPath)
               val contentPath = root.relativize(metaPath.getParent).toString.replace('\\', '/')
               val bodyHtml = markdown.render(bodyMarkdown, contentPath).body
-              val postId = upsertPost(meta, bodyHtml, source, publishedAt, modifiedAt)
+              val blogId = upsertBlog(meta, bodyHtml, source, publishedAt, modifiedAt)
               meta.tags.getOrElse(Nil).foreach { tag =>
                 val tagId = findTagId(tag).getOrElse(insertTag(tag))
-                insertPostTag(postId, tagId)
+                insertBlogTag(blogId, tagId)
               }
             }
           }
@@ -60,7 +60,7 @@ object BlogImporter {
     }
   }
 
-  private def upsertPost(
+  private def upsertBlog(
       meta: Meta,
       bodyHtml: String,
       source: String,
@@ -70,7 +70,7 @@ object BlogImporter {
     val title = meta.title.getOrElse("")
     SQL(
       """
-        |insert into posts (title, body, published_at, modified_at, source)
+        |insert into blogs (title, body, published_at, modified_at, source)
         |values (?, ?, ?, ?, ?)
         |""".stripMargin
     ).bind(title, bodyHtml, publishedAt.orNull, modifiedAt.orNull, source)
@@ -85,9 +85,9 @@ object BlogImporter {
       .apply()
   }
 
-  private def insertPostTag(postId: Long, tagId: Long)(using session: scalikejdbc.DBSession): Unit = {
-    SQL("insert or ignore into post_tags (post_id, tag_id) values (?, ?)")
-      .bind(postId, tagId)
+  private def insertBlogTag(blogId: Long, tagId: Long)(using session: scalikejdbc.DBSession): Unit = {
+    SQL("insert or ignore into blog_tags (blog_id, tag_id) values (?, ?)")
+      .bind(blogId, tagId)
       .update
       .apply()
   }
@@ -126,14 +126,6 @@ object BlogImporter {
       .orElse(Try(Instant.parse(raw)))
       .orElse(Try(LocalDateTime.parse(raw).toInstant(ZoneOffset.UTC)))
       .toOption
-  }
-
-  private def findPostId(title: String, source: String)(using session: scalikejdbc.DBSession): Option[Long] = {
-    SQL("select id from posts where title = ? and source = ? limit 1")
-      .bind(title, source)
-      .map(_.long("id"))
-      .single
-      .apply()
   }
 
   private def findTagId(name: String)(using session: scalikejdbc.DBSession): Option[Long] = {

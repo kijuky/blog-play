@@ -21,7 +21,7 @@ class AppLoader extends ApplicationLoader {
 
 final class MyComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
-    with NoHttpFiltersComponents 
+    with NoHttpFiltersComponents
     with controllers.AssetsComponents {
 
   // Initialize ScalikeJDBC connection pools at startup

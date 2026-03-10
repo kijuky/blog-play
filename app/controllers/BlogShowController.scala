@@ -36,7 +36,7 @@ class BlogShowController(cc: ControllerComponents) extends AbstractController(cc
 
   def show(id: Long): Action[AnyContent] = Action {
     val postOpt = DB.autoCommit { case given scalikejdbc.DBSession =>
-      SQL("select id, title, body, published_at, modified_at from posts where id = ? limit 1")
+      SQL("select id, title, body, published_at, modified_at from blogs where id = ? limit 1")
         .bind(id)
         .map { rs =>
           val body = Html(rs.string("body"))
@@ -54,7 +54,7 @@ class BlogShowController(cc: ControllerComponents) extends AbstractController(cc
 
     postOpt match {
       case Some(post) => Ok(views.html.blog_show(post))
-      case None => NotFound("Post not found")
+      case None => NotFound("Blog not found")
     }
   }
 }
