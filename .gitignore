@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+
+# SBT / Play
+.target/
+target/
+project/target/
+project/project/
+
+# IDE
+.idea/
+.vscode/
+
+# DB
+conf/blog.db
