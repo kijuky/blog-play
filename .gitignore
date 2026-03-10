@@ -12,4 +12,4 @@ project/project/
 .vscode/
 
 # DB
-conf/blog.db
+data/blog.db

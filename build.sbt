@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
   "org.scalikejdbc" %% "scalikejdbc-config" % "4.3.5",
   "org.commonmark" % "commonmark" % "0.27.1",
+  "org.commonmark" % "commonmark-ext-autolink" % "0.27.1",
   "org.virtuslab" %% "scala-yaml" % "0.3.1",
   "org.scalatest" %% "scalatest-funsuite" % "3.2.19" % Test
 )

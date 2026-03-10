@@ -25,9 +25,10 @@ final class MyComponents(context: ApplicationLoader.Context)
 
   // Initialize ScalikeJDBC connection pools at startup
   DBs.setupAll()
+  private val blogRoot = environment.getFile("conf/blog").toPath
   DbInitializer.initFromFile(environment.getFile("conf/init.sql").toPath)
   BlogImporter
-    .importAllEither(environment.getFile("conf/blog").toPath)
+    .importAllEither(blogRoot)
     .fold(err => throw new RuntimeException(err.toString), identity)
   applicationLifecycle.addStopHook { () =>
     Future.successful(DBs.closeAll())

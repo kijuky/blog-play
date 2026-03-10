@@ -36,16 +36,19 @@ object BlogImporter {
 
   private def runImportTx(root: Path, metaFiles: Seq[Path]): Either[ImportError, Unit] = {
     DB.localTx { case given scalikejdbc.DBSession =>
+      val markdown = new MarkdownRenderer(root)
       metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
         acc.flatMap { _ =>
           readMeta(metaPath).flatMap { meta =>
             for {
-              body <- readBody(metaPath)
+              bodyMarkdown <- readBody(metaPath)
               publishedAt <- normalizeDate(metaPath, "published_at", meta.published_at)
               modifiedAt <- normalizeDate(metaPath, "modified_at", meta.modified_at)
             } yield {
               val source = resolveSource(root, metaPath)
-              val postId = upsertPost(meta, body, source, publishedAt, modifiedAt)
+              val contentPath = root.relativize(metaPath.getParent).toString.replace('\\', '/')
+              val bodyHtml = markdown.render(bodyMarkdown, contentPath).body
+              val postId = upsertPost(meta, bodyHtml, source, publishedAt, modifiedAt)
               meta.tags.getOrElse(Nil).foreach { tag =>
                 val tagId = findTagId(tag).getOrElse(insertTag(tag))
                 insertPostTag(postId, tagId)
@@ -59,22 +62,20 @@ object BlogImporter {
 
   private def upsertPost(
       meta: Meta,
-      body: String,
+      bodyHtml: String,
       source: String,
       publishedAt: Option[String],
       modifiedAt: Option[String]
   )(using session: scalikejdbc.DBSession): Long = {
     val title = meta.title.getOrElse("")
-    findPostId(title, source).getOrElse {
-      SQL(
-        """
-          |insert into posts (title, body, published_at, modified_at, source)
-          |values (?, ?, ?, ?, ?)
-          |""".stripMargin
-      ).bind(title, body, publishedAt.orNull, modifiedAt.orNull, source)
-        .updateAndReturnGeneratedKey
-        .apply()
-    }
+    SQL(
+      """
+        |insert into posts (title, body, published_at, modified_at, source)
+        |values (?, ?, ?, ?, ?)
+        |""".stripMargin
+    ).bind(title, bodyHtml, publishedAt.orNull, modifiedAt.orNull, source)
+      .updateAndReturnGeneratedKey
+      .apply()
   }
 
   private def insertTag(name: String)(using session: scalikejdbc.DBSession): Long = {
