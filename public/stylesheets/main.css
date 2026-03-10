@@ -1,0 +1,133 @@
+:root {
+  --bg-start: #f6f0e9;
+  --bg-end: #f0f7f4;
+  --ink: #1f1a12;
+  --muted: #6b5f52;
+  --accent: #d25b2c;
+  --accent-2: #2e6f5b;
+  --card: #fffaf5;
+  --shadow: 0 18px 40px rgba(25, 18, 12, 0.12);
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(1200px 600px at 10% -10%, #ffe9d9 0%, transparent 60%),
+              radial-gradient(1200px 600px at 90% -10%, #dff3ea 0%, transparent 60%),
+              linear-gradient(160deg, var(--bg-start), var(--bg-end));
+  font-family: "Iowan Old Style", "Palatino", "Book Antiqua", "Garamond", serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.brand {
+  font-size: 32px;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid rgba(25, 18, 12, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.post-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 16px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(25, 18, 12, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.post-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(25, 18, 12, 0.12);
+}
+
+.post-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.post-date {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+}
+
+.post-body {
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(25, 18, 12, 0.08);
+}
+
+.back-link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--accent-2);
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .post-item {
+    grid-template-columns: 1fr;
+  }
+}

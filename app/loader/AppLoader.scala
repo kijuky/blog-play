@@ -21,7 +21,8 @@ class AppLoader extends ApplicationLoader {
 
 final class MyComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
-    with NoHttpFiltersComponents {
+    with NoHttpFiltersComponents 
+    with controllers.AssetsComponents {
 
   // Initialize ScalikeJDBC connection pools at startup
   DBs.setupAll()
@@ -37,5 +38,5 @@ final class MyComponents(context: ApplicationLoader.Context)
   lazy val blogListController = new controllers.BlogListController(controllerComponents)
   lazy val blogShowController = new controllers.BlogShowController(controllerComponents)
 
-  override def router: Router = new Routes(httpErrorHandler, blogListController, blogShowController)
+  override def router: Router = new Routes(httpErrorHandler, blogListController, blogShowController, assets)
 }

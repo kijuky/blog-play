@@ -6,20 +6,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Blog List</title>
+    <link rel="stylesheet" href="/assets/stylesheets/main.css" />
   </head>
   <body>
-    <h1>Posts</h1>
-    <ul>
+    <div class="container">
+      <header class="header">
+        <div class="brand">Blog Viewer</div>
+        <div class="subtitle">Latest first</div>
+      </header>
+
+      <section class="card">
+        <ul class="post-list">
       @for(item <- items) {
-        <li>
-          <a href="/blog/@item.id">
-            @if(item.title.nonEmpty) { @item.title } else { (untitled) }
-          </a>
-          <span>
-            @item.displayDate
-          </span>
-        </li>
+          <li class="post-item">
+            <a class="post-title" href="/blog/@item.id">
+              @if(item.title.nonEmpty) { @item.title } else { (untitled) }
+            </a>
+            <span class="post-date">@item.displayDate</span>
+          </li>
       }
-    </ul>
+        </ul>
+      </section>
+    </div>
   </body>
 </html>
