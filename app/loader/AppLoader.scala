@@ -33,7 +33,8 @@ final class MyComponents(context: ApplicationLoader.Context)
     Future.successful(DBs.closeAll())
   }
 
-  lazy val homeController = new controllers.HomeController(controllerComponents)
+  lazy val blogListController = new controllers.BlogListController(controllerComponents)
+  lazy val blogShowController = new controllers.BlogShowController(controllerComponents)
 
-  override def router: Router = new Routes(httpErrorHandler, homeController)
+  override def router: Router = new Routes(httpErrorHandler, blogListController, blogShowController)
 }

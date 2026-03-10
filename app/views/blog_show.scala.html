@@ -1,0 +1,19 @@
+@(post: controllers.BlogItem)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@if(post.title.nonEmpty) { @post.title } else { Untitled }</title>
+  </head>
+  <body>
+    <p><a href="/">Back</a></p>
+    <h1>@if(post.title.nonEmpty) { @post.title } else { (untitled) }</h1>
+    <p>
+      @post.displayDate
+    </p>
+    <hr />
+    @post.bodyHtml
+  </body>
+</html>

@@ -7,12 +7,14 @@ import scalikejdbc.SQL
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.{Instant, LocalDateTime, OffsetDateTime, ZoneOffset}
 import scala.util.{Try, Using}
 import scala.jdk.CollectionConverters.*
 
 object BlogImporter {
   sealed trait ImportError extends Product with Serializable
   private object ImportError {
+    final case class InvalidDate(path: Path, field: String, value: String) extends ImportError
     final case class MissingBody(path: Path) extends ImportError
     final case class MissingRoot(path: Path) extends ImportError
     final case class IoError(path: Path, cause: Throwable) extends ImportError
@@ -36,10 +38,14 @@ object BlogImporter {
     DB.localTx { case given scalikejdbc.DBSession =>
       metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
         acc.flatMap { _ =>
-            readMeta(metaPath).flatMap { meta =>
-            readBody(metaPath).map { body =>
+          readMeta(metaPath).flatMap { meta =>
+            for {
+              body <- readBody(metaPath)
+              publishedAt <- normalizeDate(metaPath, "published_at", meta.published_at)
+              modifiedAt <- normalizeDate(metaPath, "modified_at", meta.modified_at)
+            } yield {
               val source = resolveSource(root, metaPath)
-              val postId = upsertPost(meta, body, source)
+              val postId = upsertPost(meta, body, source, publishedAt, modifiedAt)
               meta.tags.getOrElse(Nil).foreach { tag =>
                 val tagId = findTagId(tag).getOrElse(insertTag(tag))
                 insertPostTag(postId, tagId)
@@ -51,7 +57,13 @@ object BlogImporter {
     }
   }
 
-  private def upsertPost(meta: Meta, body: String, source: String)(using session: scalikejdbc.DBSession): Long = {
+  private def upsertPost(
+      meta: Meta,
+      body: String,
+      source: String,
+      publishedAt: Option[String],
+      modifiedAt: Option[String]
+  )(using session: scalikejdbc.DBSession): Long = {
     val title = meta.title.getOrElse("")
     findPostId(title, source).getOrElse {
       SQL(
@@ -59,7 +71,7 @@ object BlogImporter {
           |insert into posts (title, body, published_at, modified_at, source)
           |values (?, ?, ?, ?, ?)
           |""".stripMargin
-      ).bind(title, body, meta.published_at.orNull, meta.modified_at.orNull, source)
+      ).bind(title, body, publishedAt.orNull, modifiedAt.orNull, source)
         .updateAndReturnGeneratedKey
         .apply()
     }
@@ -92,6 +104,27 @@ object BlogImporter {
       Try(Files.readString(readmePath, StandardCharsets.UTF_8))
         .toEither.left.map(ImportError.IoError(readmePath, _))
     }
+  }
+
+  private def normalizeDate(
+      metaPath: Path,
+      field: String,
+      value: Option[String]
+  ): Either[ImportError, Option[String]] = {
+    value match {
+      case None => Right(None)
+      case Some(raw) =>
+        parseInstant(raw)
+          .map(instant => Some(instant.toString))
+          .toRight(ImportError.InvalidDate(metaPath, field, raw))
+    }
+  }
+
+  private def parseInstant(raw: String): Option[Instant] = {
+    Try(OffsetDateTime.parse(raw).toInstant)
+      .orElse(Try(Instant.parse(raw)))
+      .orElse(Try(LocalDateTime.parse(raw).toInstant(ZoneOffset.UTC)))
+      .toOption
   }
 
   private def findPostId(title: String, source: String)(using session: scalikejdbc.DBSession): Option[Long] = {
