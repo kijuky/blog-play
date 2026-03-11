@@ -10,6 +10,8 @@ import scalikejdbc.SQL
 import scalikejdbc.WrappedResultSet
 
 import java.time.OffsetDateTime
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 final case class BlogListItem(
     stableId: String,
@@ -48,18 +50,21 @@ object BlogListViewItem {
 }
 
 class BlogListController(cc: ControllerComponents)(using BlogDateTime) extends AbstractController(cc) {
-  def list(): Action[AnyContent] = Action {
-    val items = DB.autoCommit { case given DBSession =>
-      SQL(
-        "select stable_id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc"
+  private given ExecutionContext = cc.executionContext
+
+  def list(): Action[AnyContent] = Action.async {
+    DB.futureLocalTx { case given DBSession =>
+      Future.successful(
+        SQL(
+          "select stable_id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc"
+        )
+          .map(BlogListItem.from)
+          .list
+          .apply()
       )
-        .map(BlogListItem.from)
-        .list
-        .apply()
+    }.map { items =>
+      val viewItems = items.map(BlogListViewItem.from(_))
+      Ok(views.html.blog_list(viewItems))
     }
-
-    val viewItems = items.map(BlogListViewItem.from(_))
-
-    Ok(views.html.blog_list(viewItems))
   }
 }

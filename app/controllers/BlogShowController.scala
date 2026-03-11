@@ -11,6 +11,8 @@ import scalikejdbc.SQL
 import scalikejdbc.WrappedResultSet
 
 import java.time.OffsetDateTime
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 final case class BlogItem(
     stableId: String,
@@ -35,16 +37,18 @@ object BlogItem {
 }
 
 class BlogShowController(cc: ControllerComponents)(using BlogDateTime) extends AbstractController(cc) {
-  def show(stableId: String): Action[AnyContent] = Action {
-    val postOpt = DB.autoCommit { case given DBSession =>
-      SQL("select stable_id, title, body, published_at, modified_at from blogs where stable_id = ? limit 1")
-        .bind(stableId)
-        .map(BlogItem.from)
-        .single
-        .apply()
-    }
+  private given ExecutionContext = cc.executionContext
 
-    postOpt match {
+  def show(stableId: String): Action[AnyContent] = Action.async {
+    DB.futureLocalTx { case given DBSession =>
+      Future.successful(
+        SQL("select stable_id, title, body, published_at, modified_at from blogs where stable_id = ? limit 1")
+          .bind(stableId)
+          .map(BlogItem.from)
+          .single
+          .apply()
+      )
+    }.map {
       case Some(post) => Ok(views.html.blog_show(post))
       case None => NotFound("Blog not found")
     }
