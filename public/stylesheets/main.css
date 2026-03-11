@@ -146,13 +146,36 @@ a:hover {
   font-size: 16px;
 }
 
-.post-body pre {
-  max-width: 100%;
+.post-body .code-block {
   margin: 16px 0;
+}
+
+.post-body .code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #242626;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(25, 18, 12, 0.12);
+  border-bottom: 0;
+  color: #e8e1d8;
+  font-size: 12px;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  letter-spacing: 0.02em;
+}
+
+.post-body .code-filename {
+  opacity: 0.85;
+}
+
+.post-body .code-block pre {
+  max-width: 100%;
+  margin: 0;
   padding: 16px 18px;
   overflow-x: auto;
   background: #2b2f2f;
-  color: #9be36d;
+  color: #e8e1d8;
   border-radius: 12px;
   border: 1px solid rgba(25, 18, 12, 0.12);
   font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
@@ -161,7 +184,12 @@ a:hover {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
-.post-body pre code {
+.post-body .code-header + pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.post-body .code-block pre code {
   display: block;
   white-space: pre;
   color: inherit;
@@ -177,7 +205,7 @@ a:hover {
   font-size: 0.95em;
 }
 
-.post-body pre code {
+.post-body .code-block pre code {
   padding: 0;
   background: transparent;
   color: inherit;

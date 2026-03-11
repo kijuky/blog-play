@@ -10,7 +10,9 @@ import router.Routes
 import scalikejdbc.config.DBs
 import services.BlogImporter
 import services.DbInitializer
+import services.MarkdownRenderer
 import services.SqlLogging
+import services.Tm4eHighlighter
 
 import scala.concurrent.Future
 
@@ -31,8 +33,20 @@ final class MyComponents(context: ApplicationLoader.Context)
   SqlLogging.install()
   private val blogRoot = environment.getFile("conf/blog").toPath
   DbInitializer.initFromFile(environment.getFile("conf/init.sql").toPath)
+  private val markdownRenderer = {
+    val grammarPath = environment.getFile("conf/scala.tmLanguage.json").toPath
+    val themePath = environment.getFile("conf/tm4e-theme.json").toPath
+    val highlighter = new Tm4eHighlighter(
+      grammarPath = grammarPath,
+      scopeName = "source.scala",
+      themePath = themePath,
+      languageId = "scala"
+    )
+    new MarkdownRenderer(blogRoot, Some(highlighter))
+  }
+
   BlogImporter
-    .importAllEither(blogRoot)
+    .importAllEither(blogRoot, markdownRenderer)
     .fold(err => throw new RuntimeException(err.toString), identity)
   applicationLifecycle.addStopHook { () =>
     Future.successful(DBs.closeAll())

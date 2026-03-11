@@ -1,0 +1,34 @@
+{
+  "scopeName": "source.scala",
+  "name": "Scala (Minimal)",
+  "patterns": [
+    {
+      "name": "comment.line.double-slash.scala",
+      "match": "//.*$"
+    },
+    {
+      "name": "comment.block.scala",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "string.quoted.double.scala",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.scala",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "keyword.control.scala",
+      "match": "\\b(if|else|for|while|match|case|def|val|var|class|object|trait|extends|with|import|package|return|new|throw|try|catch|finally|yield|implicit|given|using)\\b"
+    },
+    {
+      "name": "constant.numeric.scala",
+      "match": "\\b\\d+(?:\\.\\d+)?\\b"
+    }
+  ]
+}

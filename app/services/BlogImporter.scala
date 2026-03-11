@@ -27,15 +27,21 @@ object BlogImporter {
       tags: Option[Seq[String]]
   ) derives YamlDecoder
 
-  def importAllEither(root: Path): Either[ImportError, Unit] = {
+  def importAllEither(root: Path): Either[ImportError, Unit] =
+    importAllEither(root, new MarkdownRenderer(root))
+
+  def importAllEither(root: Path, renderer: MarkdownRenderer): Either[ImportError, Unit] = {
     filesUnder(root)
       .map(_.filter(_.getFileName.toString == "meta.yaml"))
-      .flatMap(runImportTx(root, _))
+      .flatMap(runImportTx(root, _, renderer))
   }
 
-  private def runImportTx(root: Path, metaFiles: Seq[Path]): Either[ImportError, Unit] = {
+  private def runImportTx(
+      root: Path,
+      metaFiles: Seq[Path],
+      renderer: MarkdownRenderer
+  ): Either[ImportError, Unit] = {
     DB.localTx { case given DBSession =>
-      val markdown = new MarkdownRenderer(root)
       metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
         acc.flatMap { _ =>
           readMeta(metaPath).flatMap { meta =>
@@ -47,7 +53,7 @@ object BlogImporter {
               modifiedAt <- normalizeDate(metaPath, "modified_at", meta.modified_at)
             } yield {
               val contentPath = root.relativize(metaPath.getParent).toString.replace('\\', '/')
-              val bodyHtml = markdown.render(bodyMarkdown, contentPath).body
+              val bodyHtml = renderer.render(bodyMarkdown, contentPath).body
               val blogId = upsertBlog(meta, stableId, bodyHtml, source, publishedAt, modifiedAt)
               meta.tags.getOrElse(Nil).foreach { tag =>
                 val tagId = findTagId(tag).getOrElse(insertTag(tag))

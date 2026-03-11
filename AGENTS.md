@@ -49,6 +49,8 @@
 - URL らしい文字列（`http://` / `https://`）は自動リンク化する。
 - 画像は `README.md` からの相対パスで書かれている前提。
 - クラスパス上にしか無い画像でも表示できるよう、取り込み時に画像を読み込み `data:` URI (base64) に変換して HTML に埋め込む。
+- コードブロックは tm4e でハイライトする（JVM 内で完結）。
+- TextMate grammar は `conf/scala.tmLanguage.json`、テーマは `conf/tm4e-theme.json`。
 
 ## DB（H2 / PostgreSQL mode）
 
