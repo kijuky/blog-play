@@ -56,7 +56,7 @@ class BlogListController(cc: ControllerComponents)(using BlogDateTime) extends A
     DB.futureLocalTx { case given DBSession =>
       Future.successful(
         SQL(
-          "select stable_id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc"
+          "select stable_id, title, published_at, modified_at from blogs order by coalesce(published_at, modified_at) desc"
         )
           .map(BlogListItem.from)
           .list
