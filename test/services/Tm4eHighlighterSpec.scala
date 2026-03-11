@@ -77,6 +77,8 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     val xmlGrammarPath = Paths.get("conf/xml.tmLanguage.json")
     val yamlGrammarPath = Paths.get("conf/yaml.tmLanguage.json")
     val javascriptGrammarPath = Paths.get("conf/javascript.tmLanguage.json")
+    val hoconGrammarPath = Paths.get("conf/hocon.tmLanguage.json")
+    val dockerfileGrammarPath = Paths.get("conf/dockerfile.tmLanguage.json")
     val themePath = Paths.get("conf/tm4e-theme.json")
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -91,6 +93,9 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
         GrammarSpec(languageId = "xml", scopeName = "text.xml", grammarPath = xmlGrammarPath),
         GrammarSpec(languageId = "yaml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
         GrammarSpec(languageId = "javascript", scopeName = "source.js", grammarPath = javascriptGrammarPath)
+        ,
+        GrammarSpec(languageId = "hocon", scopeName = "source.hocon", grammarPath = hoconGrammarPath),
+        GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath)
       ),
       themePath = themePath
     )
@@ -103,5 +108,7 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     assert(highlighter.highlight("<root></root>", Some("xml")).nonEmpty)
     assert(highlighter.highlight("name: ok", Some("yaml")).nonEmpty)
     assert(highlighter.highlight("const x = 1", Some("javascript")).nonEmpty)
+    assert(highlighter.highlight("app.name = \"blog\"", Some("hocon")).nonEmpty)
+    assert(highlighter.highlight("FROM alpine:3.19", Some("dockerfile")).nonEmpty)
   }
 }

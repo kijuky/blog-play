@@ -45,6 +45,8 @@ final class MyComponents(context: ApplicationLoader.Context)
     val xmlGrammarPath = environment.getFile("conf/xml.tmLanguage.json").toPath
     val yamlGrammarPath = environment.getFile("conf/yaml.tmLanguage.json").toPath
     val javascriptGrammarPath = environment.getFile("conf/javascript.tmLanguage.json").toPath
+    val hoconGrammarPath = environment.getFile("conf/hocon.tmLanguage.json").toPath
+    val dockerfileGrammarPath = environment.getFile("conf/dockerfile.tmLanguage.json").toPath
     val themePath = environment.getFile("conf/tm4e-theme.json").toPath
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -63,7 +65,10 @@ final class MyComponents(context: ApplicationLoader.Context)
         services.GrammarSpec(languageId = "yaml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
         services.GrammarSpec(languageId = "yml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
         services.GrammarSpec(languageId = "javascript", scopeName = "source.js", grammarPath = javascriptGrammarPath),
-        services.GrammarSpec(languageId = "js", scopeName = "source.js", grammarPath = javascriptGrammarPath)
+        services.GrammarSpec(languageId = "js", scopeName = "source.js", grammarPath = javascriptGrammarPath),
+        services.GrammarSpec(languageId = "hocon", scopeName = "source.hocon", grammarPath = hoconGrammarPath),
+        services.GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath),
+        services.GrammarSpec(languageId = "Dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath)
       ),
       themePath = themePath
     )

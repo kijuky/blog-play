@@ -1,0 +1,40 @@
+{
+  "name": "HOCON (Minimal)",
+  "scopeName": "source.hocon",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#booleans" },
+    { "include": "#keys" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.hocon", "match": "//.*$" },
+        { "name": "comment.line.number-sign.hocon", "match": "#.*$" },
+        { "name": "comment.block.hocon", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.hocon", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.hocon" } ] }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hocon", "match": "-?\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    },
+    "booleans": {
+      "patterns": [
+        { "name": "constant.language.hocon", "match": "\\b(true|false|null)\\b" }
+      ]
+    },
+    "keys": {
+      "patterns": [
+        { "name": "entity.name.tag.hocon", "match": "^\\s*[A-Za-z0-9_\\-\\.]+(?=\\s*[:=])" }
+      ]
+    }
+  }
+}

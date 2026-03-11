@@ -157,6 +157,8 @@ private final class CodeBlockNodeRenderer(
     case "yml" => "yaml"
     case "js" => "javascript"
     case "gs" => "javascript"
+    case "conf" => "hocon"
+    case "dockerfile" => "dockerfile"
     case other => other
   }
 
