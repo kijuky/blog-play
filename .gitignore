@@ -14,5 +14,10 @@ project/project/
 .idea/
 .vscode/
 
+# Env
+.env
+
 # DB
-data/blog.db
+data/*.mv.db
+data/*.trace.db
+data/*.lock.db

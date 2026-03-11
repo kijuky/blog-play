@@ -1,0 +1,11 @@
+services:
+  blog-play:
+    image: blog-play:0.1.0-SNAPSHOT
+    ports:
+      - "${PORT:-9000}:9000"
+    environment:
+      PLAY_HTTP_SECRET_KEY: "${PLAY_HTTP_SECRET_KEY}"
+      PLAY_ALLOWED_HOST_0: "${HOST:-.}"
+      BLOG_DB_URL: "${BLOG_DB_URL:-jdbc:h2:file:/opt/docker/data/blog;MODE=PostgreSQL}"
+    volumes:
+      - ./data:/opt/docker/data

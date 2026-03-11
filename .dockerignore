@@ -1,0 +1,11 @@
+.bsp
+.coursier
+.git
+.idea
+.ivy2
+.sbt
+target
+
+data/*
+!data/.gitkeep
+

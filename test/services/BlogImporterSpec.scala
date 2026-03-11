@@ -17,7 +17,7 @@ class BlogImporterSpec extends AnyFunSuite with BeforeAndAfterAll with BeforeAnd
   private val initSqlPath: Path = resourcePath("services/blogimporterspec/init.sql")
 
   override def beforeAll(): Unit = {
-    ConnectionPool.singleton("jdbc:sqlite::memory:", "", "")
+    ConnectionPool.singleton("jdbc:h2:mem:blogimporterspec;MODE=PostgreSQL;DB_CLOSE_DELAY=-1", "", "")
   }
 
   override def beforeEach(): Unit = {

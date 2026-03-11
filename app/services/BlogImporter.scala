@@ -85,8 +85,15 @@ object BlogImporter {
   }
 
   private def insertBlogTag(blogId: Long, tagId: Long)(using session: DBSession): Unit = {
-    SQL("insert or ignore into blog_tags (blog_id, tag_id) values (?, ?)")
-      .bind(blogId, tagId)
+    SQL(
+      """
+        |insert into blog_tags (blog_id, tag_id)
+        |select ?, ?
+        |where not exists (
+        |  select 1 from blog_tags where blog_id = ? and tag_id = ?
+        |)
+        |""".stripMargin
+    ).bind(blogId, tagId, blogId, tagId)
       .update
       .apply()
   }
@@ -137,10 +144,10 @@ object BlogImporter {
 
   private def resolveSource(root: Path, metaPath: Path): String = {
     val relative = root.relativize(metaPath).toString.replace('\\', '/')
-    val parts = relative.split("/").toList.filter(_.nonEmpty)
+    val parts = relative.split("/").toSeq.filter(_.nonEmpty)
 
     parts match {
-      case "00_archive" :: source :: _ => source
+      case "00_archive" +: source +: _ => source
       case _ => "github"
     }
   }

@@ -13,7 +13,7 @@ import java.nio.file.Path
 
 class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
   override def beforeAll(): Unit = {
-    ConnectionPool.singleton("jdbc:sqlite::memory:", "", "")
+    ConnectionPool.singleton("jdbc:h2:mem:dbinitializerspec;MODE=PostgreSQL;DB_CLOSE_DELAY=-1", "", "")
   }
 
   override def afterAll(): Unit = {
@@ -25,7 +25,7 @@ class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
     DbInitializer.initFromSql(sqlText)
 
     DB.autoCommit { case given DBSession =>
-      val tables = SQL("select name from sqlite_master where type='table'")
+      val tables = SQL("select lower(table_name) as name from information_schema.tables where table_schema = 'PUBLIC'")
         .map(_.string("name"))
         .list
         .apply()
@@ -42,7 +42,7 @@ class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
     DbInitializer.initFromSql(sqlText)
 
     DB.autoCommit { case given DBSession =>
-      val tables = SQL("select name from sqlite_master where type='table'")
+      val tables = SQL("select lower(table_name) as name from information_schema.tables where table_schema = 'PUBLIC'")
         .map(_.string("name"))
         .list
         .apply()

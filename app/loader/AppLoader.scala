@@ -4,8 +4,8 @@ import play.api.Application
 import play.api.ApplicationLoader
 import play.api.BuiltInComponentsFromContext
 import play.api.LoggerConfigurator
-import play.api.NoHttpFiltersComponents
 import play.api.routing.Router
+import play.filters.HttpFiltersComponents
 import scalikejdbc.config.DBs
 import services.DbInitializer
 import services.BlogImporter
@@ -23,7 +23,7 @@ class AppLoader extends ApplicationLoader {
 
 final class MyComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
-    with NoHttpFiltersComponents
+    with HttpFiltersComponents
     with controllers.AssetsComponents {
 
   // Initialize ScalikeJDBC connection pools at startup

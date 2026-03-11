@@ -6,7 +6,7 @@
 
 - DI は compiled-time DI。`AppLoader` / `MyComponents` で明示的に wiring する。
 - `conf/blog` はブログデータ専用リポジトリを submodule として取り込む。
-- 起動時に `conf/blog/**/meta.yaml` を読み取り、SQLite を構築する（viewer 用）。
+- 起動時に `conf/blog/**/meta.yaml` を読み取り、DB（H2）を構築する（viewer 用）。
 - `macwire` は使わない。
 
 ## データ形式（blog データ）
@@ -29,10 +29,10 @@
 - URL らしい文字列（`http://` / `https://`）は自動リンク化する。
 - 画像は `README.md` からの相対パスで書かれている前提。クラスパス上にしか無い場合でも表示できるよう、取り込み時に画像を読み込み `data:` URI (base64) に変換して HTML に埋め込む。
 
-## DB（SQLite）
+## DB（H2 / PostgreSQL mode）
 
-- 既定パスは `data/blog.db`（git 管理外）。本番は環境変数で上書きする。
-  - `BLOG_DB_URL=jdbc:sqlite:/path/to/blog.db`
+- 既定パスは `data/blog`（git 管理外。H2 が `data/blog.mv.db` などを作成）。本番は環境変数で上書きする。
+  - `BLOG_DB_URL=jdbc:h2:file:/path/to/blog;MODE=PostgreSQL`
 - 起動時に `conf/init.sql` を実行してスキーマを作る。
 - 現状は毎回 DROP → CREATE を行う（再生成前提）。
 
@@ -53,4 +53,3 @@
 - 変数のサフィックスに型名は付けない（例: `bodyHtml: Html` なら `body: Html`）。
 - 変換元/変換後が同時に存在する場合のみ区別する（例: `bodyMarkdown` / `bodyHtml`）。
 - Scala 3 の `given/using` を使い、`implicit` は使わない。
-

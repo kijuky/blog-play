@@ -10,12 +10,12 @@ import play.twirl.api.Html
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Base64
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final class MarkdownRenderer(baseDir: Path) {
-  private val extensions = List(AutolinkExtension.create()).asJava
-  private val parser = Parser.builder().extensions(extensions).build()
-  private val renderer = HtmlRenderer.builder().extensions(extensions).build()
+  private val extensions = Seq(AutolinkExtension.create())
+  private val parser = Parser.builder().extensions(extensions.asJava).build()
+  private val renderer = HtmlRenderer.builder().extensions(extensions.asJava).build()
 
   def render(markdown: String, contentPath: String): Html = {
     val doc = parser.parse(markdown)
