@@ -30,7 +30,7 @@ final class MarkdownRenderer(baseDir: Path) {
             val bytes = Files.readAllBytes(imgPath)
             val mime = Option(Files.probeContentType(imgPath)).getOrElse("application/octet-stream")
             val encoded = Base64.getEncoder.encodeToString(bytes)
-            image.setDestination(s"data:${mime};base64,${encoded}")
+            image.setDestination(s"data:$mime;base64,$encoded")
           }
         }
         super.visit(image)

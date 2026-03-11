@@ -8,6 +8,7 @@ import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.nio.file.Path
 
 class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
@@ -20,7 +21,7 @@ class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("initFromSql creates tables") {
-    val sqlText = java.nio.file.Files.readString(Path.of("conf/init.sql"), StandardCharsets.UTF_8)
+    val sqlText = Files.readString(Path.of("conf/init.sql"), StandardCharsets.UTF_8)
     DbInitializer.initFromSql(sqlText)
 
     DB.autoCommit { case given DBSession =>
@@ -36,7 +37,7 @@ class DbInitializerSpec extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("initFromSql can run twice") {
-    val sqlText = java.nio.file.Files.readString(Path.of("conf/init.sql"), StandardCharsets.UTF_8)
+    val sqlText = Files.readString(Path.of("conf/init.sql"), StandardCharsets.UTF_8)
     DbInitializer.initFromSql(sqlText)
     DbInitializer.initFromSql(sqlText)
 
