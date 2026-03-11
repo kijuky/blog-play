@@ -159,6 +159,14 @@ private final class CodeBlockNodeRenderer(
     case "gs" => "javascript"
     case "conf" => "hocon"
     case "dockerfile" => "dockerfile"
+    case "c" => "c"
+    case "h" => "c"
+    case "cpp" => "cpp"
+    case "cc" => "cpp"
+    case "cxx" => "cpp"
+    case "hpp" => "cpp"
+    case "mm" => "objective-c"
+    case "m" => "objective-c"
     case other => other
   }
 

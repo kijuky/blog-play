@@ -79,6 +79,9 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     val javascriptGrammarPath = Paths.get("conf/javascript.tmLanguage.json")
     val hoconGrammarPath = Paths.get("conf/hocon.tmLanguage.json")
     val dockerfileGrammarPath = Paths.get("conf/dockerfile.tmLanguage.json")
+    val cGrammarPath = Paths.get("conf/c.tmLanguage.json")
+    val cppGrammarPath = Paths.get("conf/cpp.tmLanguage.json")
+    val objcGrammarPath = Paths.get("conf/objective-c.tmLanguage.json")
     val themePath = Paths.get("conf/tm4e-theme.json")
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -95,7 +98,10 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
         GrammarSpec(languageId = "javascript", scopeName = "source.js", grammarPath = javascriptGrammarPath)
         ,
         GrammarSpec(languageId = "hocon", scopeName = "source.hocon", grammarPath = hoconGrammarPath),
-        GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath)
+        GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath),
+        GrammarSpec(languageId = "c", scopeName = "source.c", grammarPath = cGrammarPath),
+        GrammarSpec(languageId = "cpp", scopeName = "source.cpp", grammarPath = cppGrammarPath),
+        GrammarSpec(languageId = "objective-c", scopeName = "source.objc", grammarPath = objcGrammarPath)
       ),
       themePath = themePath
     )
@@ -110,5 +116,8 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     assert(highlighter.highlight("const x = 1", Some("javascript")).nonEmpty)
     assert(highlighter.highlight("app.name = \"blog\"", Some("hocon")).nonEmpty)
     assert(highlighter.highlight("FROM alpine:3.19", Some("dockerfile")).nonEmpty)
+    assert(highlighter.highlight("int main() { return 0; }", Some("c")).nonEmpty)
+    assert(highlighter.highlight("std::string s;", Some("cpp")).nonEmpty)
+    assert(highlighter.highlight("@interface Hoge : NSObject @end", Some("objective-c")).nonEmpty)
   }
 }

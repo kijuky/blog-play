@@ -47,6 +47,9 @@ final class MyComponents(context: ApplicationLoader.Context)
     val javascriptGrammarPath = environment.getFile("conf/javascript.tmLanguage.json").toPath
     val hoconGrammarPath = environment.getFile("conf/hocon.tmLanguage.json").toPath
     val dockerfileGrammarPath = environment.getFile("conf/dockerfile.tmLanguage.json").toPath
+    val cGrammarPath = environment.getFile("conf/c.tmLanguage.json").toPath
+    val cppGrammarPath = environment.getFile("conf/cpp.tmLanguage.json").toPath
+    val objcGrammarPath = environment.getFile("conf/objective-c.tmLanguage.json").toPath
     val themePath = environment.getFile("conf/tm4e-theme.json").toPath
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -68,7 +71,12 @@ final class MyComponents(context: ApplicationLoader.Context)
         services.GrammarSpec(languageId = "js", scopeName = "source.js", grammarPath = javascriptGrammarPath),
         services.GrammarSpec(languageId = "hocon", scopeName = "source.hocon", grammarPath = hoconGrammarPath),
         services.GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath),
-        services.GrammarSpec(languageId = "Dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath)
+        services.GrammarSpec(languageId = "Dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath),
+        services.GrammarSpec(languageId = "c", scopeName = "source.c", grammarPath = cGrammarPath),
+        services.GrammarSpec(languageId = "cpp", scopeName = "source.cpp", grammarPath = cppGrammarPath),
+        services.GrammarSpec(languageId = "c++", scopeName = "source.cpp", grammarPath = cppGrammarPath),
+        services.GrammarSpec(languageId = "objective-c", scopeName = "source.objc", grammarPath = objcGrammarPath),
+        services.GrammarSpec(languageId = "objective_c", scopeName = "source.objc", grammarPath = objcGrammarPath)
       ),
       themePath = themePath
     )
