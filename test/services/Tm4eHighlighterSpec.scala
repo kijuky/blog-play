@@ -82,6 +82,7 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     val cGrammarPath = Paths.get("conf/c.tmLanguage.json")
     val cppGrammarPath = Paths.get("conf/cpp.tmLanguage.json")
     val objcGrammarPath = Paths.get("conf/objective-c.tmLanguage.json")
+    val sqlGrammarPath = Paths.get("conf/sql.tmLanguage.json")
     val themePath = Paths.get("conf/tm4e-theme.json")
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -101,7 +102,8 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
         GrammarSpec(languageId = "dockerfile", scopeName = "source.dockerfile", grammarPath = dockerfileGrammarPath),
         GrammarSpec(languageId = "c", scopeName = "source.c", grammarPath = cGrammarPath),
         GrammarSpec(languageId = "cpp", scopeName = "source.cpp", grammarPath = cppGrammarPath),
-        GrammarSpec(languageId = "objective-c", scopeName = "source.objc", grammarPath = objcGrammarPath)
+        GrammarSpec(languageId = "objective-c", scopeName = "source.objc", grammarPath = objcGrammarPath),
+        GrammarSpec(languageId = "sql", scopeName = "source.sql", grammarPath = sqlGrammarPath)
       ),
       themePath = themePath
     )
@@ -119,5 +121,6 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     assert(highlighter.highlight("int main() { return 0; }", Some("c")).nonEmpty)
     assert(highlighter.highlight("std::string s;", Some("cpp")).nonEmpty)
     assert(highlighter.highlight("@interface Hoge : NSObject @end", Some("objective-c")).nonEmpty)
+    assert(highlighter.highlight("select * from blogs;", Some("sql")).nonEmpty)
   }
 }

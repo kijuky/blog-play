@@ -167,6 +167,7 @@ private final class CodeBlockNodeRenderer(
     case "hpp" => "cpp"
     case "mm" => "objective-c"
     case "m" => "objective-c"
+    case "sql" => "sql"
     case other => other
   }
 
