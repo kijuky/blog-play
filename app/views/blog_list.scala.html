@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Blog List</title>
-    <link rel="stylesheet" href="/assets/stylesheets/main.css" />
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
   </head>
   <body>
     <div class="container">
@@ -19,8 +19,13 @@
         <ul class="post-list">
       @for(item <- items) {
           <li class="post-item">
-            <a class="post-title" href="/blog/@item.id">
-              @if(item.title.nonEmpty) { @item.title } else { (untitled) }
+            <a class="post-title" href="@routes.BlogShowController.show(item.id)">
+              @if(item.isDraft) {
+                <i class="draft" aria-label="Draft" title="Draft"></i>
+              }
+              <span class="post-title-text">
+                @if(item.title.nonEmpty) { @item.title } else { (untitled) }
+              </span>
             </a>
             <span class="post-date">@item.displayDate</span>
           </li>

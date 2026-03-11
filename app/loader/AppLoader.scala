@@ -6,11 +6,13 @@ import play.api.BuiltInComponentsFromContext
 import play.api.LoggerConfigurator
 import play.api.NoHttpFiltersComponents
 import play.api.routing.Router
-import scala.concurrent.Future
 import scalikejdbc.config.DBs
 import services.DbInitializer
 import services.BlogImporter
+import services.SqlLogging
 import router.Routes
+
+import scala.concurrent.Future
 
 class AppLoader extends ApplicationLoader {
   override def load(context: ApplicationLoader.Context): Application = {
@@ -26,6 +28,7 @@ final class MyComponents(context: ApplicationLoader.Context)
 
   // Initialize ScalikeJDBC connection pools at startup
   DBs.setupAll()
+  SqlLogging.install()
   private val blogRoot = environment.getFile("conf/blog").toPath
   DbInitializer.initFromFile(environment.getFile("conf/init.sql").toPath)
   BlogImporter

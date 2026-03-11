@@ -9,27 +9,42 @@ import scalikejdbc.DB
 import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 final case class BlogItem(
     id: Long,
     title: String,
     body: Html,
+    isDraft: Boolean,
     displayDate: String
 )
 
 object BlogItem {
+  private val zoneId = ZoneId.of("Asia/Tokyo")
+  private val fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+
   def from(
       id: Long,
       title: String,
       body: Html,
-      publishedAt: Option[String],
-      modifiedAt: Option[String]
+      publishedAt: Option[OffsetDateTime],
+      modifiedAt: Option[OffsetDateTime]
   ): BlogItem = {
     BlogItem(
       id,
       title,
       body,
-      publishedAt.orElse(modifiedAt).getOrElse("")
+      publishedAt.isEmpty,
+      formatDate(publishedAt.orElse(modifiedAt))
     )
+  }
+
+  private def formatDate(value: Option[OffsetDateTime]): String = {
+    value
+      .map(dt => fmt.format(dt.atZoneSameInstant(zoneId)))
+      .getOrElse("")
   }
 }
 
@@ -45,8 +60,8 @@ class BlogShowController(cc: ControllerComponents) extends AbstractController(cc
             rs.long("id"),
             rs.string("title"),
             body,
-            rs.stringOpt("published_at"),
-            rs.stringOpt("modified_at")
+            rs.stringOpt("published_at").map(OffsetDateTime.parse),
+            rs.stringOpt("modified_at").map(OffsetDateTime.parse)
           )
         }
         .single

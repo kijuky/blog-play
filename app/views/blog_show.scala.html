@@ -6,13 +6,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@if(post.title.nonEmpty) { @post.title } else { Untitled }</title>
-    <link rel="stylesheet" href="/assets/stylesheets/main.css" />
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
   </head>
   <body>
     <div class="container">
-      <p><a class="back-link" href="/">Back</a></p>
+      <p><a class="back-link" href="@routes.BlogListController.list()">Back</a></p>
       <header class="header">
-        <div class="brand">@if(post.title.nonEmpty) { @post.title } else { (untitled) }</div>
+        <div class="brand">
+          @if(post.isDraft) {
+            <i class="draft draft--lg" aria-label="Draft" title="Draft"></i>
+          }
+          @if(post.title.nonEmpty) { @post.title } else { (untitled) }
+        </div>
         <div class="subtitle">@post.displayDate</div>
       </header>
       <section class="card post-body">

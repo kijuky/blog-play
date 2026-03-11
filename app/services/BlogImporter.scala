@@ -13,14 +13,12 @@ import scala.util.{Try, Using}
 import scala.jdk.CollectionConverters.*
 
 object BlogImporter {
-  sealed trait ImportError extends Product with Serializable
-  private object ImportError {
-    final case class InvalidDate(path: Path, field: String, value: String) extends ImportError
-    final case class MissingBody(path: Path) extends ImportError
-    final case class MissingRoot(path: Path) extends ImportError
-    final case class IoError(path: Path, cause: Throwable) extends ImportError
-    final case class ParseError(path: Path, message: String) extends ImportError
-  }
+  enum ImportError derives CanEqual:
+    case InvalidDate(path: Path, field: String, value: String)
+    case MissingBody(path: Path)
+    case MissingRoot(path: Path)
+    case IoError(path: Path, cause: Throwable)
+    case ParseError(path: Path, message: String)
 
   private final case class Meta(
       title: Option[String],

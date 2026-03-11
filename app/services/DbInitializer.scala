@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import scalikejdbc.DB
+import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
 object DbInitializer {
@@ -13,7 +14,7 @@ object DbInitializer {
   }
 
   def initFromSql(sqlText: String): Unit = {
-    DB.autoCommit { implicit session =>
+    DB.autoCommit { case given DBSession =>
       // Naive splitting by ';' is sufficient for our simple init file.
       sqlText
         .split(";")

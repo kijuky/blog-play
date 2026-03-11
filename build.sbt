@@ -7,6 +7,8 @@ scalaVersion := "3.8.1"
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala)
 
+Assets / pipelineStages := Seq(digest, gzip)
+
 libraryDependencies ++= Seq(
   "org.xerial" % "sqlite-jdbc" % "3.51.2.0",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
