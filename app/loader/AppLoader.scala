@@ -41,6 +41,10 @@ final class MyComponents(context: ApplicationLoader.Context)
     val zshGrammarPath = environment.getFile("conf/zsh.tmLanguage.json").toPath
     val cmdGrammarPath = environment.getFile("conf/cmd.tmLanguage.json").toPath
     val consoleGrammarPath = environment.getFile("conf/console.tmLanguage.json").toPath
+    val jsonGrammarPath = environment.getFile("conf/json.tmLanguage.json").toPath
+    val xmlGrammarPath = environment.getFile("conf/xml.tmLanguage.json").toPath
+    val yamlGrammarPath = environment.getFile("conf/yaml.tmLanguage.json").toPath
+    val javascriptGrammarPath = environment.getFile("conf/javascript.tmLanguage.json").toPath
     val themePath = environment.getFile("conf/tm4e-theme.json").toPath
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -53,7 +57,13 @@ final class MyComponents(context: ApplicationLoader.Context)
         services.GrammarSpec(languageId = "console", scopeName = "source.console", grammarPath = consoleGrammarPath),
         services.GrammarSpec(languageId = "terminal", scopeName = "source.console", grammarPath = consoleGrammarPath),
         services.GrammarSpec(languageId = "cmd", scopeName = "source.cmd", grammarPath = cmdGrammarPath),
-        services.GrammarSpec(languageId = "bat", scopeName = "source.cmd", grammarPath = cmdGrammarPath)
+        services.GrammarSpec(languageId = "bat", scopeName = "source.cmd", grammarPath = cmdGrammarPath),
+        services.GrammarSpec(languageId = "json", scopeName = "source.json", grammarPath = jsonGrammarPath),
+        services.GrammarSpec(languageId = "xml", scopeName = "text.xml", grammarPath = xmlGrammarPath),
+        services.GrammarSpec(languageId = "yaml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
+        services.GrammarSpec(languageId = "yml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
+        services.GrammarSpec(languageId = "javascript", scopeName = "source.js", grammarPath = javascriptGrammarPath),
+        services.GrammarSpec(languageId = "js", scopeName = "source.js", grammarPath = javascriptGrammarPath)
       ),
       themePath = themePath
     )

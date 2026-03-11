@@ -73,6 +73,10 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     val zshGrammarPath = Paths.get("conf/zsh.tmLanguage.json")
     val cmdGrammarPath = Paths.get("conf/cmd.tmLanguage.json")
     val consoleGrammarPath = Paths.get("conf/console.tmLanguage.json")
+    val jsonGrammarPath = Paths.get("conf/json.tmLanguage.json")
+    val xmlGrammarPath = Paths.get("conf/xml.tmLanguage.json")
+    val yamlGrammarPath = Paths.get("conf/yaml.tmLanguage.json")
+    val javascriptGrammarPath = Paths.get("conf/javascript.tmLanguage.json")
     val themePath = Paths.get("conf/tm4e-theme.json")
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -82,7 +86,11 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
         GrammarSpec(languageId = "bash", scopeName = "source.bash", grammarPath = bashGrammarPath),
         GrammarSpec(languageId = "zsh", scopeName = "source.zsh", grammarPath = zshGrammarPath),
         GrammarSpec(languageId = "cmd", scopeName = "source.cmd", grammarPath = cmdGrammarPath),
-        GrammarSpec(languageId = "console", scopeName = "source.console", grammarPath = consoleGrammarPath)
+        GrammarSpec(languageId = "console", scopeName = "source.console", grammarPath = consoleGrammarPath),
+        GrammarSpec(languageId = "json", scopeName = "source.json", grammarPath = jsonGrammarPath),
+        GrammarSpec(languageId = "xml", scopeName = "text.xml", grammarPath = xmlGrammarPath),
+        GrammarSpec(languageId = "yaml", scopeName = "source.yaml", grammarPath = yamlGrammarPath),
+        GrammarSpec(languageId = "javascript", scopeName = "source.js", grammarPath = javascriptGrammarPath)
       ),
       themePath = themePath
     )
@@ -91,5 +99,9 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     assert(highlighter.highlight("echo \"hi\"", Some("zsh")).nonEmpty)
     assert(highlighter.highlight("echo hi", Some("cmd")).nonEmpty)
     assert(highlighter.highlight("$ ls -la", Some("console")).nonEmpty)
+    assert(highlighter.highlight("{\"name\": \"ok\"}", Some("json")).nonEmpty)
+    assert(highlighter.highlight("<root></root>", Some("xml")).nonEmpty)
+    assert(highlighter.highlight("name: ok", Some("yaml")).nonEmpty)
+    assert(highlighter.highlight("const x = 1", Some("javascript")).nonEmpty)
   }
 }

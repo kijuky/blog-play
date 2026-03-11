@@ -1,0 +1,32 @@
+{
+  "name": "JSON (Minimal)",
+  "scopeName": "source.json",
+  "patterns": [
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#constants" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.json", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.json" } ] }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.json", "match": "-?\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b" }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        { "name": "constant.language.json", "match": "\\b(true|false|null)\\b" }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.separator.json", "match": "[\\{\\}\\[\\]:,]" }
+      ]
+    }
+  }
+}

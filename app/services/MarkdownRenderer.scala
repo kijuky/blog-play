@@ -154,6 +154,9 @@ private final class CodeBlockNodeRenderer(
     case "zsh" => "zsh"
     case "cmd" => "cmd"
     case "bat" => "cmd"
+    case "yml" => "yaml"
+    case "js" => "javascript"
+    case "gs" => "javascript"
     case other => other
   }
 
