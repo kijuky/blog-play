@@ -113,6 +113,21 @@ class MarkdownRendererSpec extends AnyFunSuite {
     assert(html.contains("""class="code-filename">code.gs"""))
   }
 
+  test("render code block with dotfile name maps by extension") {
+    val baseDir = resourcePath("services/markdownrendererspec/blog")
+    val renderer = new MarkdownRenderer(baseDir, Some(new StubHighlighter))
+
+    val markdown =
+      """```.gitlab-ci.yml
+        |stages:
+        |  - test
+        |```""".stripMargin
+    val html = renderer.render(markdown, contentPath = "01_test").body
+
+    assert(html.contains("""class="language-yaml""""))
+    assert(html.contains("""class="code-filename">.gitlab-ci.yml"""))
+  }
+
   test("render code block with language and filename keeps both") {
     val baseDir = resourcePath("services/markdownrendererspec/blog")
     val renderer = new MarkdownRenderer(baseDir, Some(new StubHighlighter))

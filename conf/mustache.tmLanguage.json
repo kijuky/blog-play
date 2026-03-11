@@ -1,0 +1,14 @@
+{
+  "name": "Mustache (Minimal)",
+  "scopeName": "text.mustache",
+  "patterns": [
+    { "include": "#tags" }
+  ],
+  "repository": {
+    "tags": {
+      "patterns": [
+        { "name": "keyword.control.mustache", "match": "\\{\\{[#/^!]?[A-Za-z0-9_\\.]+\\}\\}" }
+      ]
+    }
+  }
+}

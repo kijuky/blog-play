@@ -1,0 +1,8 @@
+{
+  "name": "Math (Minimal)",
+  "scopeName": "text.math",
+  "patterns": [
+    { "name": "constant.numeric.math", "match": "\\b\\d+(?:\\.\\d+)?\\b" },
+    { "name": "keyword.operator.math", "match": "[+\\-*/^=]" }
+  ]
+}

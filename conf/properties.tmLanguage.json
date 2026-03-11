@@ -1,0 +1,27 @@
+{
+  "name": "Properties (Minimal)",
+  "scopeName": "source.properties",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#keys" },
+    { "include": "#values" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.number-sign.properties", "match": "#.*$" },
+        { "name": "comment.line.exclamation.properties", "match": "!.*$" }
+      ]
+    },
+    "keys": {
+      "patterns": [
+        { "name": "entity.name.tag.properties", "match": "^\\s*[^=:\\s]+(?=\\s*[:=])" }
+      ]
+    },
+    "values": {
+      "patterns": [
+        { "name": "string.unquoted.properties", "match": "[:=]\\s*.*$" }
+      ]
+    }
+  }
+}

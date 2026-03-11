@@ -83,6 +83,21 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     val cppGrammarPath = Paths.get("conf/cpp.tmLanguage.json")
     val objcGrammarPath = Paths.get("conf/objective-c.tmLanguage.json")
     val sqlGrammarPath = Paths.get("conf/sql.tmLanguage.json")
+    val pythonGrammarPath = Paths.get("conf/python.tmLanguage.json")
+    val kotlinGrammarPath = Paths.get("conf/kotlin.tmLanguage.json")
+    val clojureGrammarPath = Paths.get("conf/clojure.tmLanguage.json")
+    val swiftGrammarPath = Paths.get("conf/swift.tmLanguage.json")
+    val rubyGrammarPath = Paths.get("conf/ruby.tmLanguage.json")
+    val goGrammarPath = Paths.get("conf/go.tmLanguage.json")
+    val hspGrammarPath = Paths.get("conf/hsp.tmLanguage.json")
+    val nscripterGrammarPath = Paths.get("conf/nscripter.tmLanguage.json")
+    val bnfGrammarPath = Paths.get("conf/bnf.tmLanguage.json")
+    val propertiesGrammarPath = Paths.get("conf/properties.tmLanguage.json")
+    val htmlGrammarPath = Paths.get("conf/html.tmLanguage.json")
+    val gradleGrammarPath = Paths.get("conf/gradle.tmLanguage.json")
+    val mustacheGrammarPath = Paths.get("conf/mustache.tmLanguage.json")
+    val fortranGrammarPath = Paths.get("conf/fortran.tmLanguage.json")
+    val mathGrammarPath = Paths.get("conf/math.tmLanguage.json")
     val themePath = Paths.get("conf/tm4e-theme.json")
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
@@ -103,7 +118,22 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
         GrammarSpec(languageId = "c", scopeName = "source.c", grammarPath = cGrammarPath),
         GrammarSpec(languageId = "cpp", scopeName = "source.cpp", grammarPath = cppGrammarPath),
         GrammarSpec(languageId = "objective-c", scopeName = "source.objc", grammarPath = objcGrammarPath),
-        GrammarSpec(languageId = "sql", scopeName = "source.sql", grammarPath = sqlGrammarPath)
+        GrammarSpec(languageId = "sql", scopeName = "source.sql", grammarPath = sqlGrammarPath),
+        GrammarSpec(languageId = "python", scopeName = "source.python", grammarPath = pythonGrammarPath),
+        GrammarSpec(languageId = "kotlin", scopeName = "source.kotlin", grammarPath = kotlinGrammarPath),
+        GrammarSpec(languageId = "clojure", scopeName = "source.clojure", grammarPath = clojureGrammarPath),
+        GrammarSpec(languageId = "swift", scopeName = "source.swift", grammarPath = swiftGrammarPath),
+        GrammarSpec(languageId = "ruby", scopeName = "source.ruby", grammarPath = rubyGrammarPath),
+        GrammarSpec(languageId = "go", scopeName = "source.go", grammarPath = goGrammarPath),
+        GrammarSpec(languageId = "hsp", scopeName = "source.hsp", grammarPath = hspGrammarPath),
+        GrammarSpec(languageId = "nscripter", scopeName = "source.nscripter", grammarPath = nscripterGrammarPath),
+        GrammarSpec(languageId = "bnf", scopeName = "source.bnf", grammarPath = bnfGrammarPath),
+        GrammarSpec(languageId = "properties", scopeName = "source.properties", grammarPath = propertiesGrammarPath),
+        GrammarSpec(languageId = "html", scopeName = "text.html", grammarPath = htmlGrammarPath),
+        GrammarSpec(languageId = "gradle", scopeName = "source.gradle", grammarPath = gradleGrammarPath),
+        GrammarSpec(languageId = "mustache", scopeName = "text.mustache", grammarPath = mustacheGrammarPath),
+        GrammarSpec(languageId = "fortran", scopeName = "source.fortran", grammarPath = fortranGrammarPath),
+        GrammarSpec(languageId = "math", scopeName = "text.math", grammarPath = mathGrammarPath)
       ),
       themePath = themePath
     )
@@ -122,5 +152,20 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
     assert(highlighter.highlight("std::string s;", Some("cpp")).nonEmpty)
     assert(highlighter.highlight("@interface Hoge : NSObject @end", Some("objective-c")).nonEmpty)
     assert(highlighter.highlight("select * from blogs;", Some("sql")).nonEmpty)
+    assert(highlighter.highlight("def main(): pass", Some("python")).nonEmpty)
+    assert(highlighter.highlight("fun main() {}", Some("kotlin")).nonEmpty)
+    assert(highlighter.highlight("(defn f [] 1)", Some("clojure")).nonEmpty)
+    assert(highlighter.highlight("struct User {}", Some("swift")).nonEmpty)
+    assert(highlighter.highlight("def foo; end", Some("ruby")).nonEmpty)
+    assert(highlighter.highlight("package main", Some("go")).nonEmpty)
+    assert(highlighter.highlight("repeat 10", Some("hsp")).nonEmpty)
+    assert(highlighter.highlight("goto *start", Some("nscripter")).nonEmpty)
+    assert(highlighter.highlight("<expr> ::= \"a\"", Some("bnf")).nonEmpty)
+    assert(highlighter.highlight("app.name=blog", Some("properties")).nonEmpty)
+    assert(highlighter.highlight("<div></div>", Some("html")).nonEmpty)
+    assert(highlighter.highlight("dependencies { }", Some("gradle")).nonEmpty)
+    assert(highlighter.highlight("{{name}}", Some("mustache")).nonEmpty)
+    assert(highlighter.highlight("program main", Some("fortran")).nonEmpty)
+    assert(highlighter.highlight("a + b = c", Some("math")).nonEmpty)
   }
 }

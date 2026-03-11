@@ -132,17 +132,26 @@ private final class CodeBlockNodeRenderer(
       val parts = head.split(":", 2)
       val lang = parts.headOption.map(_.trim).filter(_.nonEmpty)
       val name = parts.lift(1).map(_.trim).filter(_.nonEmpty)
-      (lang, name)
+      (lang.map(normalizeLanguageTag), name)
     } else {
       val trimmed = head.trim
       if (trimmed.isEmpty) {
         (None, None)
-      } else if (trimmed.contains(".") && !trimmed.startsWith(".")) {
+      } else if (trimmed.startsWith(":")) {
+        val name = trimmed.drop(1).trim
+        if (name.isEmpty) {
+          (None, None)
+        } else {
+          val ext = name.split("\\.").lastOption.map(_.trim).filter(_.nonEmpty)
+          val lang = ext.map(normalizeExtension)
+          (lang, Some(name))
+        }
+      } else if (trimmed.contains(".") && !trimmed.endsWith(".")) {
         val ext = trimmed.split("\\.").lastOption.map(_.trim).filter(_.nonEmpty)
         val lang = ext.map(normalizeExtension)
         (lang, Some(trimmed))
       } else {
-        (Some(trimmed), None)
+        (Some(normalizeLanguageTag(trimmed)), None)
       }
     }
   }
@@ -168,6 +177,33 @@ private final class CodeBlockNodeRenderer(
     case "mm" => "objective-c"
     case "m" => "objective-c"
     case "sql" => "sql"
+    case "py" => "python"
+    case "kt" => "kotlin"
+    case "kts" => "kotlin"
+    case "clj" => "clojure"
+    case "swift" => "swift"
+    case "rb" => "ruby"
+    case "go" => "go"
+    case "env" => "shell"
+    case "hsp" => "hsp"
+    case "nsi" => "nscripter"
+    case "bnf" => "bnf"
+    case "properties" => "properties"
+    case "html" => "html"
+    case "htm" => "html"
+    case "gradle" => "gradle"
+    case "mustache" => "mustache"
+    case "ftn" => "fortran"
+    case "f90" => "fortran"
+    case other => other
+  }
+
+  private def normalizeLanguageTag(tag: String): String = tag match {
+    case "amm" => "scala"
+    case "config" => "hocon"
+    case "conf" => "hocon"
+    case "YAML" => "yaml"
+    case "shell-session" => "console"
     case other => other
   }
 

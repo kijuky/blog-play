@@ -1,0 +1,34 @@
+{
+  "name": "Kotlin (Minimal)",
+  "scopeName": "source.kotlin",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.kotlin", "match": "//.*$" },
+        { "name": "comment.block.kotlin", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.kotlin", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.kotlin" } ] },
+        { "name": "string.quoted.triple.kotlin", "begin": "\"\"\"", "end": "\"\"\"" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.kotlin", "match": "\\b(class|fun|val|var|if|else|when|for|while|do|return|object|interface|package|import|try|catch|finally|throw|in|is|as)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.kotlin", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

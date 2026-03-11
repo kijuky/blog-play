@@ -1,0 +1,33 @@
+{
+  "name": "Ruby (Minimal)",
+  "scopeName": "source.ruby",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.number-sign.ruby", "match": "#.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.ruby", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.ruby" } ] },
+        { "name": "string.quoted.single.ruby", "begin": "'", "end": "'" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.ruby", "match": "\\b(class|module|def|if|elsif|else|case|when|while|do|end|return|yield|begin|rescue|ensure|raise|require|include|extend)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.ruby", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}
