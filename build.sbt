@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.4.6",
   "org.commonmark" % "commonmark" % "0.27.1",
   "org.commonmark" % "commonmark-ext-autolink" % "0.27.1",
+  "org.commonmark" % "commonmark-ext-gfm-tables" % "0.27.1",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
   "org.scalikejdbc" %% "scalikejdbc-config" % "4.3.5",
   "org.virtuslab" %% "scala-yaml" % "0.3.1",

@@ -190,6 +190,46 @@ a:hover {
   border: 1px solid rgba(25, 18, 12, 0.08);
 }
 
+.post-body table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(25, 18, 12, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.post-body thead {
+  background: rgba(210, 91, 44, 0.14);
+}
+
+.post-body th,
+.post-body td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(25, 18, 12, 0.08);
+}
+
+.post-body th[align="center"],
+.post-body td[align="center"] {
+  text-align: center;
+}
+
+.post-body th[align="right"],
+.post-body td[align="right"] {
+  text-align: right;
+}
+
+.post-body tbody tr:nth-child(even) {
+  background: rgba(245, 232, 220, 0.55);
+}
+
+.post-body tbody tr:hover {
+  background: rgba(210, 91, 44, 0.16);
+}
+
 .back-link {
   display: inline-flex;
   gap: 8px;
