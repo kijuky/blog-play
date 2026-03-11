@@ -86,6 +86,7 @@
 - `asInstanceOf` は使わない。
 - service 層はナイーブに throw しない（ドメインエラーは `Either` で返す）。起動失敗にするかは `AppLoader/MyComponents` 側で決める。
 - Controller は `Action.async` を使い、DB は `DB.futureLocalTx` で非同期にする。
+- 新しいクラスを追加したら、そのクラスの単体テストを追加する。
 
 ## 用語
 
