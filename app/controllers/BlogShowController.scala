@@ -8,10 +8,9 @@ import play.twirl.api.Html
 import scalikejdbc.DB
 import scalikejdbc.DBSession
 import scalikejdbc.SQL
+import scalikejdbc.WrappedResultSet
 
 import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 final case class BlogItem(
     stableId: String,
@@ -22,48 +21,25 @@ final case class BlogItem(
 )
 
 object BlogItem {
-  private val zoneId = ZoneId.of("Asia/Tokyo")
-  private val fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-
-  def from(
-      stableId: String,
-      title: String,
-      body: Html,
-      publishedAt: Option[OffsetDateTime],
-      modifiedAt: Option[OffsetDateTime]
-  ): BlogItem = {
+  def from(rs: WrappedResultSet)(using dateTime: BlogDateTime): BlogItem = {
+    val publishedAt = rs.stringOpt("published_at").map(OffsetDateTime.parse)
+    val modifiedAt = rs.stringOpt("modified_at").map(OffsetDateTime.parse)
     BlogItem(
-      stableId,
-      title,
-      body,
+      rs.string("stable_id"),
+      rs.string("title"),
+      Html(rs.string("body")),
       publishedAt.isEmpty,
-      formatDate(publishedAt.orElse(modifiedAt))
+      dateTime.format(publishedAt.orElse(modifiedAt))
     )
-  }
-
-  private def formatDate(value: Option[OffsetDateTime]): String = {
-    value
-      .map(dt => fmt.format(dt.atZoneSameInstant(zoneId)))
-      .getOrElse("")
   }
 }
 
-class BlogShowController(cc: ControllerComponents) extends AbstractController(cc) {
-
+class BlogShowController(cc: ControllerComponents)(using BlogDateTime) extends AbstractController(cc) {
   def show(stableId: String): Action[AnyContent] = Action {
     val postOpt = DB.autoCommit { case given DBSession =>
       SQL("select stable_id, title, body, published_at, modified_at from blogs where stable_id = ? limit 1")
         .bind(stableId)
-        .map { rs =>
-          val body = Html(rs.string("body"))
-          BlogItem.from(
-            rs.string("stable_id"),
-            rs.string("title"),
-            body,
-            rs.stringOpt("published_at").map(OffsetDateTime.parse),
-            rs.stringOpt("modified_at").map(OffsetDateTime.parse)
-          )
-        }
+        .map(BlogItem.from)
         .single
         .apply()
     }

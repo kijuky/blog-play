@@ -7,10 +7,9 @@ import play.api.mvc.ControllerComponents
 import scalikejdbc.DB
 import scalikejdbc.DBSession
 import scalikejdbc.SQL
+import scalikejdbc.WrappedResultSet
 
 import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 final case class BlogListItem(
     stableId: String,
@@ -18,6 +17,17 @@ final case class BlogListItem(
     publishedAt: Option[OffsetDateTime],
     modifiedAt: Option[OffsetDateTime]
 )
+
+object BlogListItem {
+  def from(rs: WrappedResultSet): BlogListItem = {
+    BlogListItem(
+      rs.string("stable_id"),
+      rs.string("title"),
+      rs.stringOpt("published_at").map(OffsetDateTime.parse),
+      rs.stringOpt("modified_at").map(OffsetDateTime.parse)
+    )
+  }
+}
 
 final case class BlogListViewItem(
     stableId: String,
@@ -27,44 +37,28 @@ final case class BlogListViewItem(
 )
 
 object BlogListViewItem {
-  private val zoneId = ZoneId.of("Asia/Tokyo")
-  private val fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-
-  def from(item: BlogListItem): BlogListViewItem = {
+  def from(item: BlogListItem)(using dateTime: BlogDateTime): BlogListViewItem = {
     BlogListViewItem(
       item.stableId,
       item.title,
       item.publishedAt.isEmpty,
-      formatDate(item.publishedAt.orElse(item.modifiedAt))
+      dateTime.format(item.publishedAt.orElse(item.modifiedAt))
     )
-  }
-
-  private def formatDate(value: Option[OffsetDateTime]): String = {
-    value
-      .map(dt => fmt.format(dt.atZoneSameInstant(zoneId)))
-      .getOrElse("")
   }
 }
 
-class BlogListController(cc: ControllerComponents) extends AbstractController(cc) {
+class BlogListController(cc: ControllerComponents)(using BlogDateTime) extends AbstractController(cc) {
   def list(): Action[AnyContent] = Action {
     val items = DB.autoCommit { case given DBSession =>
       SQL(
         "select stable_id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc"
       )
-        .map { rs =>
-          BlogListItem(
-            rs.string("stable_id"),
-            rs.string("title"),
-            rs.stringOpt("published_at").map(OffsetDateTime.parse),
-            rs.stringOpt("modified_at").map(OffsetDateTime.parse)
-          )
-        }
+        .map(BlogListItem.from)
         .list
         .apply()
     }
 
-    val viewItems = items.map(BlogListViewItem.from)
+    val viewItems = items.map(BlogListViewItem.from(_))
 
     Ok(views.html.blog_list(viewItems))
   }

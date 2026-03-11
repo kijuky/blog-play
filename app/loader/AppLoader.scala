@@ -6,11 +6,11 @@ import play.api.BuiltInComponentsFromContext
 import play.api.LoggerConfigurator
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
-import scalikejdbc.config.DBs
-import services.DbInitializer
-import services.BlogImporter
-import services.SqlLogging
 import router.Routes
+import scalikejdbc.config.DBs
+import services.BlogImporter
+import services.DbInitializer
+import services.SqlLogging
 
 import scala.concurrent.Future
 
@@ -37,6 +37,13 @@ final class MyComponents(context: ApplicationLoader.Context)
   applicationLifecycle.addStopHook { () =>
     Future.successful(DBs.closeAll())
   }
+
+  private given controllers.BlogDateTime =
+    controllers.BlogDateTime
+      .from(
+        sys.env.get("TZ"),
+        configuration.getOptional[String]("blog.datetime.format")
+      )
 
   private lazy val blogListController = new controllers.BlogListController(controllerComponents)
   private lazy val blogShowController = new controllers.BlogShowController(controllerComponents)

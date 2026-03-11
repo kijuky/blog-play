@@ -24,6 +24,9 @@ libraryDependencies ++= Seq(
 // sbt-native-packager (Docker) settings
 dockerBaseImage := "eclipse-temurin:21-jre-jammy"
 dockerExposedPorts := Seq(9000)
+dockerEnvVars ++= Map(
+  "TZ" -> "Asia/Tokyo"
+)
 
 // Don't create RUNNING_PID inside the container image (Play prod default).
 // Official workaround is to point it at /dev/null via JVM option.
