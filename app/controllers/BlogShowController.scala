@@ -14,7 +14,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 final case class BlogItem(
-    id: Long,
+    stableId: String,
     title: String,
     body: Html,
     isDraft: Boolean,
@@ -26,14 +26,14 @@ object BlogItem {
   private val fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
   def from(
-      id: Long,
+      stableId: String,
       title: String,
       body: Html,
       publishedAt: Option[OffsetDateTime],
       modifiedAt: Option[OffsetDateTime]
   ): BlogItem = {
     BlogItem(
-      id,
+      stableId,
       title,
       body,
       publishedAt.isEmpty,
@@ -50,14 +50,14 @@ object BlogItem {
 
 class BlogShowController(cc: ControllerComponents) extends AbstractController(cc) {
 
-  def show(id: Long): Action[AnyContent] = Action {
+  def show(stableId: String): Action[AnyContent] = Action {
     val postOpt = DB.autoCommit { case given DBSession =>
-      SQL("select id, title, body, published_at, modified_at from blogs where id = ? limit 1")
-        .bind(id)
+      SQL("select stable_id, title, body, published_at, modified_at from blogs where stable_id = ? limit 1")
+        .bind(stableId)
         .map { rs =>
           val body = Html(rs.string("body"))
           BlogItem.from(
-            rs.long("id"),
+            rs.string("stable_id"),
             rs.string("title"),
             body,
             rs.stringOpt("published_at").map(OffsetDateTime.parse),

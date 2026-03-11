@@ -13,14 +13,14 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 final case class BlogListItem(
-    id: Long,
+    stableId: String,
     title: String,
     publishedAt: Option[OffsetDateTime],
     modifiedAt: Option[OffsetDateTime]
 )
 
 final case class BlogListViewItem(
-    id: Long,
+    stableId: String,
     title: String,
     isDraft: Boolean,
     displayDate: String
@@ -32,7 +32,7 @@ object BlogListViewItem {
 
   def from(item: BlogListItem): BlogListViewItem = {
     BlogListViewItem(
-      item.id,
+      item.stableId,
       item.title,
       item.publishedAt.isEmpty,
       formatDate(item.publishedAt.orElse(item.modifiedAt))
@@ -49,10 +49,12 @@ object BlogListViewItem {
 class BlogListController(cc: ControllerComponents) extends AbstractController(cc) {
   def list(): Action[AnyContent] = Action {
     val items = DB.autoCommit { case given DBSession =>
-      SQL("select id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc")
+      SQL(
+        "select stable_id, title, published_at, modified_at from blogs order by coalesce(modified_at, published_at) desc"
+      )
         .map { rs =>
           BlogListItem(
-            rs.long("id"),
+            rs.string("stable_id"),
             rs.string("title"),
             rs.stringOpt("published_at").map(OffsetDateTime.parse),
             rs.stringOpt("modified_at").map(OffsetDateTime.parse)

@@ -144,6 +144,21 @@ class BlogImporterSpec extends AnyFunSuite with BeforeAndAfterAll with BeforeAnd
     }
   }
 
+  test("importAllEither accepts numeric-only directory names") {
+    val result = BlogImporter.importAllEither(blogRoot.resolve("03"))
+    assert(result.isRight)
+
+    DB.autoCommit { case given DBSession =>
+      val stableId = SQL("select stable_id from blogs where source = ? limit 1")
+        .bind("github")
+        .map(_.string("stable_id"))
+        .single
+        .apply()
+        .getOrElse("")
+      assert(stableId == "github-03")
+    }
+  }
+
   private def resourcePath(name: String): Path = {
     val url = Option(getClass.getClassLoader.getResource(name)).getOrElse {
       fail(s"Test resource not found: $name")

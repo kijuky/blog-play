@@ -19,7 +19,7 @@
         <ul class="post-list">
       @for(item <- items) {
           <li class="post-item">
-            <a class="post-title" href="@routes.BlogShowController.show(item.id)">
+            <a class="post-title" href="@routes.BlogShowController.show(item.stableId)">
               @if(item.isDraft) {
                 <i class="draft" aria-label="Draft" title="Draft"></i>
               }

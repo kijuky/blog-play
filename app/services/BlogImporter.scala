@@ -39,15 +39,16 @@ object BlogImporter {
       metaFiles.foldLeft[Either[ImportError, Unit]](Right(())) { (acc, metaPath) =>
         acc.flatMap { _ =>
           readMeta(metaPath).flatMap { meta =>
+            val source = resolveSource(root, metaPath)
             for {
               bodyMarkdown <- readBody(metaPath)
+              stableId <- buildStableId(metaPath, source)
               publishedAt <- normalizeDate(metaPath, "published_at", meta.published_at)
               modifiedAt <- normalizeDate(metaPath, "modified_at", meta.modified_at)
             } yield {
-              val source = resolveSource(root, metaPath)
               val contentPath = root.relativize(metaPath.getParent).toString.replace('\\', '/')
               val bodyHtml = markdown.render(bodyMarkdown, contentPath).body
-              val blogId = upsertBlog(meta, bodyHtml, source, publishedAt, modifiedAt)
+              val blogId = upsertBlog(meta, stableId, bodyHtml, source, publishedAt, modifiedAt)
               meta.tags.getOrElse(Nil).foreach { tag =>
                 val tagId = findTagId(tag).getOrElse(insertTag(tag))
                 insertBlogTag(blogId, tagId)
@@ -61,6 +62,7 @@ object BlogImporter {
 
   private def upsertBlog(
       meta: Meta,
+      stableId: String,
       bodyHtml: String,
       source: String,
       publishedAt: Option[String],
@@ -69,10 +71,10 @@ object BlogImporter {
     val title = meta.title.getOrElse("")
     SQL(
       """
-        |insert into blogs (title, body, published_at, modified_at, source)
-        |values (?, ?, ?, ?, ?)
+        |insert into blogs (stable_id, title, body, published_at, modified_at, source)
+        |values (?, ?, ?, ?, ?, ?)
         |""".stripMargin
-    ).bind(title, bodyHtml, publishedAt.orNull, modifiedAt.orNull, source)
+    ).bind(stableId, title, bodyHtml, publishedAt.orNull, modifiedAt.orNull, source)
       .updateAndReturnGeneratedKey
       .apply()
   }
@@ -150,6 +152,24 @@ object BlogImporter {
       case "00_archive" +: source +: _ => source
       case _ => "github"
     }
+  }
+
+  private def buildStableId(metaPath: Path, source: String): Either[ImportError, String] = {
+    val dirName = metaPath.getParent.getFileName.toString
+    val digitPrefix = dirName.takeWhile(_.isDigit)
+    val underscorePrefix =
+      dirName.indexOf('_') match {
+        case i if i > 0 => dirName.substring(0, i)
+        case _ => ""
+      }
+
+    val prefix =
+      if (digitPrefix.nonEmpty) digitPrefix
+      else if (underscorePrefix.nonEmpty) underscorePrefix
+      else ""
+
+    if (prefix.isEmpty) Left(ImportError.ParseError(metaPath, s"Invalid blog directory name: $dirName"))
+    else Right(s"$source-$prefix")
   }
 
   private def filesUnder(root: Path): Either[ImportError, Seq[Path]] = {
