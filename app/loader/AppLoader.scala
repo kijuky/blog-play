@@ -34,13 +34,15 @@ final class MyComponents(context: ApplicationLoader.Context)
   private val blogRoot = environment.getFile("conf/blog").toPath
   DbInitializer.initFromFile(environment.getFile("conf/init.sql").toPath)
   private val markdownRenderer = {
-    val grammarPath = environment.getFile("conf/scala.tmLanguage.json").toPath
+    val scalaGrammarPath = environment.getFile("conf/scala.tmLanguage.json").toPath
+    val javaGrammarPath = environment.getFile("conf/java.tmLanguage.json").toPath
     val themePath = environment.getFile("conf/tm4e-theme.json").toPath
     val highlighter = new Tm4eHighlighter(
-      grammarPath = grammarPath,
-      scopeName = "source.scala",
-      themePath = themePath,
-      languageId = "scala"
+      grammars = Seq(
+        services.GrammarSpec(languageId = "scala", scopeName = "source.scala", grammarPath = scalaGrammarPath),
+        services.GrammarSpec(languageId = "java", scopeName = "source.java", grammarPath = javaGrammarPath)
+      ),
+      themePath = themePath
     )
     new MarkdownRenderer(blogRoot, Some(highlighter))
   }

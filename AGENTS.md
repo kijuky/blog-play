@@ -51,6 +51,7 @@
 - クラスパス上にしか無い画像でも表示できるよう、取り込み時に画像を読み込み `data:` URI (base64) に変換して HTML に埋め込む。
 - コードブロックは tm4e でハイライトする（JVM 内で完結）。
 - TextMate grammar は `conf/scala.tmLanguage.json`、テーマは `conf/tm4e-theme.json`。
+- Scala の文字列補間内 (`s"...${...}"`) の式ハイライトは未対応。今後の拡張候補。
 
 ## DB（H2 / PostgreSQL mode）
 

@@ -12,6 +12,11 @@
       "end": "\\*/"
     },
     {
+      "name": "string.quoted.triple.scala",
+      "begin": "\"\"\"",
+      "end": "\"\"\""
+    },
+    {
       "name": "string.quoted.double.scala",
       "begin": "\"",
       "end": "\"",
@@ -23,8 +28,16 @@
       ]
     },
     {
+      "name": "identifier.escaped.scala",
+      "match": "`[^`]+`"
+    },
+    {
       "name": "keyword.control.scala",
-      "match": "\\b(if|else|for|while|match|case|def|val|var|class|object|trait|extends|with|import|package|return|new|throw|try|catch|finally|yield|implicit|given|using)\\b"
+      "match": "\\b(as|case|catch|class|def|do|else|enum|extends|export|final|finally|for|forSome|given|if|implicit|import|infix|inline|lazy|macro|match|new|object|opaque|open|override|package|private|protected|return|sealed|super|then|this|throw|trait|try|type|using|val|var|while|with|yield)\\b"
+    },
+    {
+      "name": "keyword.other.scala",
+      "match": "\\b(abstract|derives|end|extension|transparent)\\b"
     },
     {
       "name": "constant.numeric.scala",

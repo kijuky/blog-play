@@ -71,10 +71,57 @@ class MarkdownRendererSpec extends AnyFunSuite {
     )
   }
 
+  test("render code block with filename infers language from extension") {
+    val baseDir = resourcePath("services/markdownrendererspec/blog")
+    val renderer = new MarkdownRenderer(baseDir, Some(new StubHighlighter))
+
+    val markdown =
+      """```main.scala
+        |val x = 1
+        |```""".stripMargin
+    val html = renderer.render(markdown, contentPath = "01_test").body
+
+    assert(html.contains("""class="language-scala""""))
+    assert(html.contains("""class="code-filename">main.scala"""))
+  }
+
+  test("render code block with sbt extension maps to scala") {
+    val baseDir = resourcePath("services/markdownrendererspec/blog")
+    val renderer = new MarkdownRenderer(baseDir, Some(new StubHighlighter))
+
+    val markdown =
+      """```build.sbt
+        |val scalaVersion = "3.8.1"
+        |```""".stripMargin
+    val html = renderer.render(markdown, contentPath = "01_test").body
+
+    assert(html.contains("""class="language-scala""""))
+    assert(html.contains("""class="code-filename">build.sbt"""))
+  }
+
+  test("render code block with language and filename keeps both") {
+    val baseDir = resourcePath("services/markdownrendererspec/blog")
+    val renderer = new MarkdownRenderer(baseDir, Some(new StubHighlighter))
+
+    val markdown =
+      """```scala:Main.scala
+        |val x = 1
+        |```""".stripMargin
+    val html = renderer.render(markdown, contentPath = "01_test").body
+
+    assert(html.contains("""class="language-scala""""))
+    assert(html.contains("""class="code-filename">Main.scala"""))
+  }
+
   private def resourcePath(name: String): Path = {
     val url = Option(getClass.getClassLoader.getResource(name)).getOrElse {
       fail(s"Test resource not found: $name")
     }
     Paths.get(url.toURI)
   }
+}
+
+private final class StubHighlighter extends CodeHighlighter {
+  override def highlight(code: String, language: Option[String]): Option[String] =
+    Some("highlighted")
 }

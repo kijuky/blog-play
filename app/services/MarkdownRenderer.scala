@@ -134,12 +134,22 @@ private final class CodeBlockNodeRenderer(
       val name = parts.lift(1).map(_.trim).filter(_.nonEmpty)
       (lang, name)
     } else {
-      val lang = head.trim match {
-        case "" => None
-        case value => Some(value)
+      val trimmed = head.trim
+      if (trimmed.isEmpty) {
+        (None, None)
+      } else if (trimmed.contains(".") && !trimmed.startsWith(".")) {
+        val ext = trimmed.split("\\.").lastOption.map(_.trim).filter(_.nonEmpty)
+        val lang = ext.map(normalizeExtension)
+        (lang, Some(trimmed))
+      } else {
+        (Some(trimmed), None)
       }
-      (lang, None)
     }
+  }
+
+  private def normalizeExtension(ext: String): String = ext match {
+    case "sbt" => "scala"
+    case other => other
   }
 
   private def escapeHtml(value: String): String = {

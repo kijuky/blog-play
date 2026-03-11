@@ -10,34 +10,36 @@ import java.nio.file.Path
 import java.time.Duration
 import scala.jdk.CollectionConverters.*
 
+final case class GrammarSpec(languageId: String, scopeName: String, grammarPath: Path)
+
 final class Tm4eHighlighter(
-    grammarPath: Path,
-    scopeName: String,
-    themePath: Path,
-    languageId: String
+    grammars: Seq[GrammarSpec],
+    themePath: Path
 ) extends CodeHighlighter {
+  private val scopeToPath = grammars.map(spec => spec.scopeName -> spec.grammarPath).toMap
   private val registry = new Registry(new IRegistryOptions {
     override def getGrammarSource(scope: String): IGrammarSource =
-      if (scope == scopeName) IGrammarSource.fromFile(grammarPath) else null
+      scopeToPath.get(scope).map(IGrammarSource.fromFile).orNull
   })
 
-  private val grammar = {
-    registry.loadGrammar(scopeName)
-  }
+  private val grammarByLanguage = grammars.flatMap { spec =>
+    Option(registry.loadGrammar(spec.scopeName)).map(spec.languageId -> _)
+  }.toMap
 
   private val theme = TextMateTheme.fromFile(themePath)
 
   override def highlight(code: String, language: Option[String]): Option[String] = {
-    if (language.exists(_ != languageId)) {
-      None
-    } else {
+    val grammar = language.flatMap(grammarByLanguage.get)
+    grammar match {
+      case None => None
+      case Some(selectedGrammar) =>
       val lines = code.split("\n", -1).toSeq
       val builder = new StringBuilder
       var ruleStack: Option[IStateStack] = None
-      lines.foreach { line =>
+      lines.zipWithIndex.foreach { (line, index) =>
         val result = ruleStack match {
-          case Some(stack) => grammar.tokenizeLine(line, stack, Duration.ofSeconds(5))
-          case None => grammar.tokenizeLine(line)
+          case Some(stack) => selectedGrammar.tokenizeLine(line, stack, Duration.ofSeconds(5))
+          case None => selectedGrammar.tokenizeLine(line)
         }
         val tokens = result.getTokens.toSeq
         tokens.foreach { token =>
@@ -46,7 +48,9 @@ final class Tm4eHighlighter(
           val style = theme.styleFor(scopes)
           builder.append(style.wrap(escapeHtml(text)))
         }
-        builder.append("\n")
+        if (index < lines.length - 1) {
+          builder.append("\n")
+        }
         ruleStack = Some(result.getRuleStack)
       }
       Some(builder.result())
