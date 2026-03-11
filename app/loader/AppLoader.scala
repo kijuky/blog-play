@@ -36,11 +36,24 @@ final class MyComponents(context: ApplicationLoader.Context)
   private val markdownRenderer = {
     val scalaGrammarPath = environment.getFile("conf/scala.tmLanguage.json").toPath
     val javaGrammarPath = environment.getFile("conf/java.tmLanguage.json").toPath
+    val shellGrammarPath = environment.getFile("conf/shell.tmLanguage.json").toPath
+    val bashGrammarPath = environment.getFile("conf/bash.tmLanguage.json").toPath
+    val zshGrammarPath = environment.getFile("conf/zsh.tmLanguage.json").toPath
+    val cmdGrammarPath = environment.getFile("conf/cmd.tmLanguage.json").toPath
+    val consoleGrammarPath = environment.getFile("conf/console.tmLanguage.json").toPath
     val themePath = environment.getFile("conf/tm4e-theme.json").toPath
     val highlighter = new Tm4eHighlighter(
       grammars = Seq(
         services.GrammarSpec(languageId = "scala", scopeName = "source.scala", grammarPath = scalaGrammarPath),
-        services.GrammarSpec(languageId = "java", scopeName = "source.java", grammarPath = javaGrammarPath)
+        services.GrammarSpec(languageId = "java", scopeName = "source.java", grammarPath = javaGrammarPath),
+        services.GrammarSpec(languageId = "shell", scopeName = "source.shell", grammarPath = shellGrammarPath),
+        services.GrammarSpec(languageId = "sh", scopeName = "source.shell", grammarPath = shellGrammarPath),
+        services.GrammarSpec(languageId = "bash", scopeName = "source.bash", grammarPath = bashGrammarPath),
+        services.GrammarSpec(languageId = "zsh", scopeName = "source.zsh", grammarPath = zshGrammarPath),
+        services.GrammarSpec(languageId = "console", scopeName = "source.console", grammarPath = consoleGrammarPath),
+        services.GrammarSpec(languageId = "terminal", scopeName = "source.console", grammarPath = consoleGrammarPath),
+        services.GrammarSpec(languageId = "cmd", scopeName = "source.cmd", grammarPath = cmdGrammarPath),
+        services.GrammarSpec(languageId = "bat", scopeName = "source.cmd", grammarPath = cmdGrammarPath)
       ),
       themePath = themePath
     )

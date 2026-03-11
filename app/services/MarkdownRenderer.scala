@@ -149,6 +149,11 @@ private final class CodeBlockNodeRenderer(
 
   private def normalizeExtension(ext: String): String = ext match {
     case "sbt" => "scala"
+    case "sh" => "shell"
+    case "bash" => "bash"
+    case "zsh" => "zsh"
+    case "cmd" => "cmd"
+    case "bat" => "cmd"
     case other => other
   }
 
