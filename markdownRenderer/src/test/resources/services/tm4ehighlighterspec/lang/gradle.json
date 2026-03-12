@@ -1,0 +1,35 @@
+{
+  "name": "Gradle (Minimal)",
+  "scopeName": "source.gradle",
+  "fileTypes": ["gradle"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.gradle", "match": "//.*$" },
+        { "name": "comment.block.gradle", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.gradle", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.gradle" } ] },
+        { "name": "string.quoted.single.gradle", "begin": "'", "end": "'" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.gradle", "match": "\\b(apply|plugins|dependencies|repositories|task|compile|implementation|testImplementation|sourceSets|allprojects|subprojects)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.gradle", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

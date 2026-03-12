@@ -1,0 +1,34 @@
+{
+  "name": "Fortran (Minimal)",
+  "scopeName": "source.fortran",
+  "fileTypes": ["ftn", "f90"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.fortran", "match": "!.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.fortran", "begin": "\"", "end": "\"" },
+        { "name": "string.quoted.single.fortran", "begin": "'", "end": "'" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.fortran", "match": "\\b(program|end|subroutine|function|module|use|implicit|none|if|then|else|do|continue|return|call|select|case)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.fortran", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

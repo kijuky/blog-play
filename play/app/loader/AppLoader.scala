@@ -1,0 +1,104 @@
+package loader
+
+import io.github.classgraph.ClassGraph
+import play.api.Application
+import play.api.ApplicationLoader
+import play.api.BuiltInComponentsFromContext
+import play.api.LoggerConfigurator
+import play.api.routing.Router
+import play.filters.HttpFiltersComponents
+import router.Routes
+import scalikejdbc.DB
+import scalikejdbc.DBSession
+import scalikejdbc.config.DBs
+import services.BlogImporter
+import services.DbInitializer
+import services.MarkdownRendererImpl
+import services.SqlLogging
+import services.Tm4eHighlighter
+
+import java.time.ZoneId
+import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Using
+
+class AppLoader extends ApplicationLoader {
+  override def load(context: ApplicationLoader.Context): Application = {
+    LoggerConfigurator(context.environment.classLoader)
+      .foreach(_.configure(context.environment))
+    MyComponents(context).application
+  }
+}
+
+final class MyComponents(context: ApplicationLoader.Context)
+    extends BuiltInComponentsFromContext(context)
+    with HttpFiltersComponents
+    with controllers.AssetsComponents {
+
+  // Initialize ScalikeJDBC connection pools at startup
+  DBs.setupAll()
+  SqlLogging.install()
+  DbInitializer.initFromResource(
+    environment
+      .resource("init.sql")
+      .getOrElse(throw RuntimeException("no such resource: init.sql"))
+  )
+  private given zoneId: ZoneId = ZoneId.systemDefault
+  DB.localTx { case given DBSession =>
+    val metaURLs = {
+      Using(ClassGraph().acceptPaths("blog").scan())(
+        _.getAllResources
+          .filter(_.getPath.endsWith("meta.yaml"))
+          .asScala
+          .map(_.getURL)
+          .toSeq
+      ).fold(throw _, identity)
+    }
+    val markdownRenderer = {
+      val languages =
+        Using(ClassGraph().acceptPaths("tm4e/lang").scan())(
+          _.getAllResources
+            .filter(_.getPath.endsWith(".json"))
+            .asScala
+            .toSeq
+        ).fold(throw _, identity)
+      val grammars = {
+        languages.flatMap(l =>
+          System.out.println(l.getPath)
+          val t = services.GrammarSpec.from(l.getPath)
+          t match {
+            case Success(v) => Some(v)
+            case Failure(e) => println(e); None
+          }
+        )
+      }
+      val themePath =
+        environment
+          .resource("tm4e/theme.json")
+          .getOrElse(throw RuntimeException("no such file: tm4e/theme.json"))
+      val highlighter = Tm4eHighlighter(grammars, themePath)
+      MarkdownRendererImpl(Some(highlighter))
+    }
+    BlogImporter()
+      .importAllEither(metaURLs, markdownRenderer)
+      .fold(err => throw RuntimeException(err.toString), identity)
+  }
+  applicationLifecycle.addStopHook { () => Future.successful(DBs.closeAll()) }
+
+  // controllers
+
+  private given controllers.BlogDateTime =
+    controllers.BlogDateTime
+      .from(zoneId, configuration.getOptional[String]("blog.datetime.format"))
+  private lazy val blogListController =
+    controllers.BlogListController(controllerComponents)
+  private lazy val blogShowController =
+    controllers.BlogShowController(controllerComponents)
+
+  // router
+
+  override def router: Router =
+    Routes(httpErrorHandler, blogListController, blogShowController, assets)
+}

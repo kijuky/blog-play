@@ -1,0 +1,34 @@
+{
+  "name": "SQL (Minimal)",
+  "scopeName": "source.sql",
+  "fileTypes": ["sql"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-dash.sql", "match": "--.*$" },
+        { "name": "comment.block.sql", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.single.sql", "begin": "'", "end": "'", "patterns": [ { "match": "''", "name": "constant.character.escape.sql" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.sql", "match": "\\b(select|from|where|join|left|right|inner|outer|on|group|by|order|having|insert|into|values|update|set|delete|create|alter|drop|table|index|primary|key|foreign|references|and|or|not|null|distinct|as|limit|offset)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.sql", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

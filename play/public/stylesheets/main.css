@@ -1,0 +1,297 @@
+:root {
+  --bg-start: #f6f0e9;
+  --bg-end: #f0f7f4;
+  --ink: #1f1a12;
+  --muted: #6b5f52;
+  --accent: #d25b2c;
+  --accent-2: #2e6f5b;
+  --card: #fffaf5;
+  --shadow: 0 18px 40px rgba(25, 18, 12, 0.12);
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(1200px 600px at 10% -10%, #ffe9d9 0%, transparent 60%),
+              radial-gradient(1200px 600px at 90% -10%, #dff3ea 0%, transparent 60%),
+              linear-gradient(160deg, var(--bg-start), var(--bg-end));
+  font-family: "Iowan Old Style", "Palatino", "Book Antiqua", "Garamond", serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.brand {
+  font-size: 32px;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid rgba(25, 18, 12, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.post-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 16px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(25, 18, 12, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  align-items: center;
+}
+
+.post-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(25, 18, 12, 0.12);
+}
+
+.post-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.post-title-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  font-style: normal;
+  color: var(--accent);
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.draft::before {
+  /* Emoji is the most robust cross-browser icon with zero extra assets. */
+  content: "📝";
+  font-size: 16px;
+}
+
+.draft--lg {
+  width: 22px;
+  height: 22px;
+  margin-right: 12px;
+  vertical-align: -4px;
+}
+
+.draft--lg::before {
+  font-size: 20px;
+}
+
+.post-date {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+}
+
+.post-body {
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.post-body .code-block {
+  margin: 16px 0;
+}
+
+.post-body .code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #242626;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(25, 18, 12, 0.12);
+  border-bottom: 0;
+  color: #e8e1d8;
+  font-size: 12px;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  letter-spacing: 0.02em;
+}
+
+.post-body .code-filename {
+  opacity: 0.85;
+}
+
+.post-body .code-block pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  overflow-x: auto;
+  background: #2b2f2f;
+  color: #e8e1d8;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 18, 12, 0.12);
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.post-body .code-block .mermaid {
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  overflow-x: auto;
+  background: #f7f3ea;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 18, 12, 0.12);
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.post-body .code-block .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.post-body .code-header + pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.post-body .code-block pre code {
+  display: block;
+  white-space: pre;
+  color: inherit;
+  background: transparent;
+}
+
+.post-body code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(43, 47, 47, 0.12);
+  color: #2b2f2f;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 0.95em;
+}
+
+.post-body .code-block pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(25, 18, 12, 0.08);
+}
+
+.post-body table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(25, 18, 12, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.post-body thead {
+  background: rgba(210, 91, 44, 0.14);
+}
+
+.post-body th,
+.post-body td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(25, 18, 12, 0.08);
+}
+
+.post-body th[align="center"],
+.post-body td[align="center"] {
+  text-align: center;
+}
+
+.post-body th[align="right"],
+.post-body td[align="right"] {
+  text-align: right;
+}
+
+.post-body tbody tr:nth-child(even) {
+  background: rgba(245, 232, 220, 0.55);
+}
+
+.post-body tbody tr:hover {
+  background: rgba(210, 91, 44, 0.16);
+}
+
+.back-link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--accent-2);
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .post-item {
+    grid-template-columns: 1fr;
+  }
+}

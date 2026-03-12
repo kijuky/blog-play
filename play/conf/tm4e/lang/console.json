@@ -1,0 +1,28 @@
+{
+  "name": "Console (Minimal)",
+  "scopeName": "source.console",
+  "FileTypes":  [],
+  "patterns": [
+    { "include": "#prompt" },
+    { "include": "#command" },
+    { "include": "#output" }
+  ],
+  "repository": {
+    "prompt": {
+      "patterns": [
+        { "name": "keyword.other.console.prompt", "match": "^(\\$|#|%|PS>)(?=\\s)" },
+        { "name": "keyword.other.console.prompt", "match": "^[^\\n]*[>$#%](?=\\s)" }
+      ]
+    },
+    "command": {
+      "patterns": [
+        { "name": "string.unquoted.console.command", "match": "^(\\$|#|%|PS>)[ \\t]+.*$" }
+      ]
+    },
+    "output": {
+      "patterns": [
+        { "name": "comment.line.console.output", "match": "^(?!\\s*(\\$|#|%|PS>)).+$" }
+      ]
+    }
+  }
+}

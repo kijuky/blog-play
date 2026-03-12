@@ -1,0 +1,29 @@
+{
+  "name": "BNF (Minimal)",
+  "scopeName": "source.bnf",
+  "fileTypes": ["bnf"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#rules" },
+    { "include": "#strings" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.number-sign.bnf", "match": "#.*$" }
+      ]
+    },
+    "rules": {
+      "patterns": [
+        { "name": "entity.name.rule.bnf", "match": "^\\s*<[^>]+>(?=\\s*::=)" },
+        { "name": "keyword.operator.bnf", "match": "::=" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.bnf", "begin": "\"", "end": "\"" },
+        { "name": "string.quoted.single.bnf", "begin": "'", "end": "'" }
+      ]
+    }
+  }
+}

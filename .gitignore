@@ -2,13 +2,9 @@
 .DS_Store
 
 # SBT / Play
-.target/
 target/
 project/target/
 project/project/
-.sbt/
-.ivy2/
-.coursier/
 
 # IDE
 .idea/
@@ -18,6 +14,6 @@ project/project/
 .env
 
 # DB
-data/*.mv.db
-data/*.trace.db
-data/*.lock.db
+play/data/*.mv.db
+play/data/*.trace.db
+play/data/*.lock.db

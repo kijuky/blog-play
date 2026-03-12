@@ -1,0 +1,36 @@
+{
+  "name": "JavaScript (Minimal)",
+  "scopeName": "source.js",
+  "fileTypes": ["js", "gs"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.js", "match": "//.*$" },
+        { "name": "comment.block.js", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.js", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.js" } ] },
+        { "name": "string.quoted.single.js", "begin": "'", "end": "'", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.js" } ] },
+        { "name": "string.quoted.template.js", "begin": "`", "end": "`", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.js" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.js", "match": "\\b(class|const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|try|catch|finally|throw|new|this|super|import|export|extends|await|async)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.js", "match": "-?\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}
