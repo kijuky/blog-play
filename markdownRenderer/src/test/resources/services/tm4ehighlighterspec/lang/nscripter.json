@@ -1,0 +1,34 @@
+{
+  "name": "NScripter (Minimal)",
+  "scopeName": "source.nscripter",
+  "fileTypes": ["nsi"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.semicolon.nscripter", "match": ";.*$" },
+        { "name": "comment.line.number-sign.nscripter", "match": "#.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.nscripter", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.nscripter" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.nscripter", "match": "\\b(if|else|goto|gosub|return|select|case|end)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.nscripter", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

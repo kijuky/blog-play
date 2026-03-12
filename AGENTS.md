@@ -8,15 +8,15 @@
 ## 重要な前提
 
 - DI は compiled-time DI。`AppLoader` / `MyComponents` で明示的に wiring する。
-- `conf/blog` はブログデータ専用リポジトリを submodule として取り込む。
-- 起動時に `conf/blog/**/meta.yaml` を読み取り、DB（H2）を構築する（viewer 用）。
+- `blog` はブログデータ専用リポジトリを submodule として取り込む。
+- 起動時に `blog/**/meta.yaml` を読み取り、DB（H2）を構築する（viewer 用）。
 - `macwire` は使わない。
 
 ## 起動時フロー
 
 - `MyComponents` で DB 接続プール初期化（ScalikeJDBC）。
-- `conf/init.sql` 実行（DROP → CREATE 前提）。
-- `conf/blog` から全記事を import（失敗したら起動失敗）。
+- `play/conf/init.sql` 実行（DROP → CREATE 前提）。
+- `blog` から全記事を import（失敗したら起動失敗）。
 
 ## データ形式（blog データ）
 
@@ -31,8 +31,8 @@
 
 ## source の解釈
 
-- `conf/blog/<article>/meta.yaml` は `source = "github"` として扱う。
-- `conf/blog/00_archive/<source>/<article>/meta.yaml` は `<source>` を `source` 名として扱う。
+- `blog/<article>/meta.yaml` は `source = "github"` として扱う。
+- `blog/00_archive/<source>/<article>/meta.yaml` は `<source>` を `source` 名として扱う。
 
 ## stable_id（URL 用の安定キー）
 
@@ -50,14 +50,15 @@
 - 画像は `README.md` からの相対パスで書かれている前提。
 - クラスパス上にしか無い画像でも表示できるよう、取り込み時に画像を読み込み `data:` URI (base64) に変換して HTML に埋め込む。
 - コードブロックは tm4e でハイライトする（JVM 内で完結）。
-- TextMate grammar は `conf/scala.tmLanguage.json`、テーマは `conf/tm4e-theme.json`。
+- TextMate grammar は `conf/tm4e/lang/*.json`。拡張子マップは `fileTypes` から組み立てる。
+- Mermaid はサーバ側でPNG化せず、クライアント側で Mermaid.js による描画を行う。
 - Scala の文字列補間内 (`s"...${...}"`) の式ハイライトは未対応。今後の拡張候補。
 
 ## DB（H2 / PostgreSQL mode）
 
-- 既定パスは `data/blog`（git 管理外。H2 が `data/blog.mv.db` などを作成）。
+- 既定パスは `play/data/blog`（git 管理外。H2 が `play/data/blog.mv.db` などを作成）。
 - 本番は環境変数で JDBC URL を上書きする（例: `BLOG_DB_URL=jdbc:h2:file:/path/to/blog;MODE=PostgreSQL`）。
-- 起動時に `conf/init.sql` を実行してスキーマを作る。
+- 起動時に `play/conf/init.sql` を実行してスキーマを作る。
 - 現状は毎回 DROP → CREATE を行う（再生成前提）。
 - SQL は H2(pg mode) を前提にしつつ、`insert or ignore` のような方言に寄せない。
 
@@ -76,7 +77,7 @@
 ## 実行方法
 
 - 初期化: `mise install` / `sbt compile`
-- 起動: `sbt run`
+- 起動: `mise run play:run`
 
 ## 命名・実装方針（継続的な合意）
 

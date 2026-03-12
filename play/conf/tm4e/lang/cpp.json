@@ -1,0 +1,36 @@
+{
+  "name": "C++ (Minimal)",
+  "scopeName": "source.cpp",
+  "fileTypes": ["cpp", "cc", "cxx", "hpp"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.cpp", "match": "//.*$" },
+        { "name": "comment.block.cpp", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.cpp", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.cpp" } ] },
+        { "name": "string.quoted.single.cpp", "begin": "'", "end": "'", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.cpp" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.cpp", "match": "\\b(if|else|for|while|do|switch|case|break|continue|return|goto|sizeof|try|catch|throw|new|delete|constexpr|namespace|template|typename|class|struct|public|private|protected|virtual|override)\\b" },
+        { "name": "storage.type.cpp", "match": "\\b(char|short|int|long|float|double|void|unsigned|signed|bool|wchar_t|auto|const|volatile|static|extern|mutable|inline|typedef|using)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.cpp", "match": "\\b(0x[0-9A-Fa-f]+|\\d+(?:\\.\\d+)?)\\b" }
+      ]
+    }
+  }
+}

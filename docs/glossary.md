@@ -8,11 +8,11 @@ viewer の表示単位。DB テーブル `blogs` の1行に対応する。
 
 ## Source
 
-元のブログサイト名（例: `qiita`, `hatena_m3`）。`conf/blog` 直下のデータは `github` 扱い。
+元のブログサイト名（例: `qiita`, `hatena_m3`）。`blog` 直下のデータは `github` 扱い。
 
 ## Blog Root
 
-取り込み対象のルートディレクトリ。通常は `conf/blog`。
+取り込み対象のルートディレクトリ。通常は `blog`。
 
 ## meta.yaml
 
@@ -28,5 +28,4 @@ viewer の表示単位。DB テーブル `blogs` の1行に対応する。
 
 ## Archive Layout
 
-`conf/blog/00_archive/<source>/<article>/meta.yaml` というディレクトリ構造。`<source>` を `Source` として扱う。
-
+`blog/00_archive/<source>/<article>/meta.yaml` というディレクトリ構造。`<source>` を `Source` として扱う。

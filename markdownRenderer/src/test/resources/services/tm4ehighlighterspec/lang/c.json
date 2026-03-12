@@ -1,0 +1,36 @@
+{
+  "name": "C (Minimal)",
+  "scopeName": "source.c",
+  "fileTypes": ["c", "h"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.c", "match": "//.*$" },
+        { "name": "comment.block.c", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.c", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.c" } ] },
+        { "name": "string.quoted.single.c", "begin": "'", "end": "'", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.c" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.c", "match": "\\b(if|else|for|while|do|switch|case|break|continue|return|goto|sizeof)\\b" },
+        { "name": "storage.type.c", "match": "\\b(char|short|int|long|float|double|void|unsigned|signed|struct|union|enum|typedef|const|volatile|static|extern|auto|register)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.c", "match": "\\b(0x[0-9A-Fa-f]+|\\d+(?:\\.\\d+)?)\\b" }
+      ]
+    }
+  }
+}

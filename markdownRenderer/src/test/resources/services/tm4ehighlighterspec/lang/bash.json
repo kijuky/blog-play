@@ -1,0 +1,41 @@
+{
+  "name": "Bash (Minimal)",
+  "scopeName": "source.bash",
+  "fileTypes": ["bash"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#variables" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.number-sign.bash", "match": "#.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.bash", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.bash" } ] },
+        { "name": "string.quoted.single.bash", "begin": "'", "end": "'" }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        { "name": "variable.other.bash", "match": "\\$\\{?[A-Za-z_][A-Za-z0-9_]*\\}?" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.bash", "match": "\\b(if|then|else|elif|fi|for|while|do|done|case|esac|in|function|select|until|time)\\b" },
+        { "name": "support.function.bash", "match": "\\b(echo|printf|cd|pwd|exit|export|unset|alias|source|test|true|false|declare|local|readonly|getopts)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.bash", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

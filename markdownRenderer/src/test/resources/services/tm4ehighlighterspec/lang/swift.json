@@ -1,0 +1,34 @@
+{
+  "name": "Swift (Minimal)",
+  "scopeName": "source.swift",
+  "fileTypes": ["swift"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.swift", "match": "//.*$" },
+        { "name": "comment.block.swift", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.swift", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.swift" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.swift", "match": "\\b(class|struct|enum|protocol|extension|func|let|var|if|else|switch|case|for|while|do|return|import|try|catch|throw|guard|in|where|as|is)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.swift", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}
