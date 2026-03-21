@@ -11,12 +11,13 @@
 - `blog/src/main/resources/blog` はブログデータ専用リポジトリを submodule として取り込む。
 - 起動時に `blog/src/main/resources/blog/**/meta.yaml` を読み取り、DB（H2）を構築する（viewer 用）。
 - `macwire` は使わない。
+- リポジトリはマルチモジュール構成（`play` / `markdownRenderer` / `blog`）。
 
 ## 起動時フロー
 
 - `MyComponents` で DB 接続プール初期化（ScalikeJDBC）。
-- `play/conf/init.sql` 実行（DROP → CREATE 前提）。
-- `blog` から全記事を import（失敗したら起動失敗）。
+- `init.sql` リソース実行（`play/conf/init.sql` を classpath 経由で読む。DROP → CREATE 前提）。
+- `ClassGraph` で `blog/**/meta.yaml` を収集して import（失敗したら起動失敗）。
 
 ## データ形式（blog データ）
 
@@ -50,7 +51,7 @@
 - 画像は `README.md` からの相対パスで書かれている前提。
 - クラスパス上にしか無い画像でも表示できるよう、取り込み時に画像を読み込み `data:` URI (base64) に変換して HTML に埋め込む。
 - コードブロックは tm4e でハイライトする（JVM 内で完結）。
-- TextMate grammar は `conf/tm4e/lang/*.json`。拡張子マップは `fileTypes` から組み立てる。
+- TextMate grammar は `tm4e/lang/*.json` リソースを `ClassGraph` で走査して読み込む。拡張子マップは `fileTypes` から組み立てる。
 - Mermaid はサーバ側でPNG化せず、クライアント側で Mermaid.js による描画を行う。
 - Scala の文字列補間内 (`s"...${...}"`) の式ハイライトは未対応。今後の拡張候補。
 

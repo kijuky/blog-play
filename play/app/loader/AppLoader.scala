@@ -4,6 +4,7 @@ import io.github.classgraph.ClassGraph
 import play.api.Application
 import play.api.ApplicationLoader
 import play.api.BuiltInComponentsFromContext
+import play.api.Logging
 import play.api.LoggerConfigurator
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
@@ -35,7 +36,8 @@ class AppLoader extends ApplicationLoader {
 final class MyComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
     with HttpFiltersComponents
-    with controllers.AssetsComponents {
+    with controllers.AssetsComponents
+    with Logging {
 
   // Initialize ScalikeJDBC connection pools at startup
   DBs.setupAll()
@@ -66,11 +68,11 @@ final class MyComponents(context: ApplicationLoader.Context)
         ).fold(throw _, identity)
       val grammars = {
         languages.flatMap(l =>
-          System.out.println(l.getPath)
-          val t = services.GrammarSpec.from(l.getPath)
-          t match {
+          services.GrammarSpec.from(l.getPath) match {
             case Success(v) => Some(v)
-            case Failure(e) => println(e); None
+            case Failure(e) =>
+              logger.error(s"Failed to parse tm4e grammar: ${l.getPath}", e)
+              None
           }
         )
       }
