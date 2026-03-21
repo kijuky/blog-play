@@ -9,6 +9,32 @@ mise install
 sbt compile
 ```
 
+## 起動（開発）
+
+```bash
+mise run play:run
+```
+
+## Play + GraalVM
+
+```bash
+# ネイティブバイナリ生成
+sbt "play / GraalVMNativeImage / packageBin"
+
+# コンテナ起動（native-image 版）
+mise run play:graalvm
+```
+
+## ZIO HTTP サブプロジェクト
+
+```bash
+mise run zio-http:run
+```
+
+- ポートは `ZIO_HTTP_PORT`（デフォルト `9001`）。
+- Play と同じ DB 初期化/インポート処理を起動時に実行します。
+- 一覧は `GET /`、詳細は `GET /blog/:stableId`。
+
 ## Docker (本番想定)
 
 ```bash
