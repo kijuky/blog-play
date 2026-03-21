@@ -1,0 +1,36 @@
+{
+  "name": "Python (Minimal)",
+  "scopeName": "source.python",
+  "fileTypes": ["py"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.number-sign.python", "match": "#.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.python", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.python" } ] },
+        { "name": "string.quoted.single.python", "begin": "'", "end": "'", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.python" } ] },
+        { "name": "string.quoted.triple.python", "begin": "\"\"\"", "end": "\"\"\"" },
+        { "name": "string.quoted.triple.python", "begin": "'''", "end": "'''" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.python", "match": "\\b(def|class|return|if|elif|else|for|while|try|except|finally|with|as|import|from|pass|break|continue|lambda|yield|raise|in|is|not|and|or)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.python", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Objective-C (Minimal)",
+  "scopeName": "source.objc",
+  "fileTypes": ["m", "mm"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.objc", "match": "//.*$" },
+        { "name": "comment.block.objc", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.objc", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.objc" } ] },
+        { "name": "string.quoted.single.objc", "begin": "'", "end": "'", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.objc" } ] },
+        { "name": "string.quoted.objc", "begin": "@\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.objc" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.objc", "match": "\\b(if|else|for|while|do|switch|case|break|continue|return|goto|try|catch|throw|@try|@catch|@finally|@throw)\\b" },
+        { "name": "storage.type.objc", "match": "\\b(int|float|double|void|char|short|long|unsigned|signed|BOOL|id|instancetype|SEL|Class|const|volatile|static|extern)\\b" },
+        { "name": "storage.type.objc.directive", "match": "\\b(@interface|@implementation|@protocol|@end|@property|@synthesize|@dynamic|@autoreleasepool)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.objc", "match": "\\b(0x[0-9A-Fa-f]+|\\d+(?:\\.\\d+)?)\\b" }
+      ]
+    }
+  }
+}

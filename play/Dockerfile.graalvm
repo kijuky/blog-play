@@ -1,11 +1,11 @@
-FROM sbtscala/scala-sbt:graalvm-community-25.0.1_1.12.6_3.8.2 as build
+FROM sbtscala/scala-sbt:graalvm-community-25.0.1_1.12.6_3.8.2 AS build
 
 COPY ./ /app/
 WORKDIR /app
 
 RUN sbt play/GraalVMNativeImage/packageBin
 
-FROM almalinux:latest as app
+FROM almalinux:latest AS app
 
 WORKDIR /app
 COPY --from=build /app/play/target/graalvm-native-image/* .

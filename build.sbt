@@ -89,22 +89,26 @@ lazy val play =
       )
     )
 
-lazy val zioHttp =
+lazy val zio =
   project
-    .in(file("zioHttp"))
-    .dependsOn(play)
+    .in(file("zio"))
+    .dependsOn(blog, markdownRenderer)
     .settings(
       // project
-      name := "blog-zio-http",
+      name := "blog-zio",
 
       // libraries
       libraryDependencies ++= Seq(
+        "com.h2database" % "h2" % "2.4.240",
+        "com.typesafe" % "config" % "1.4.6",
         "dev.zio" %% "zio-http" % "3.10.1",
-        "org.slf4j" % "slf4j-api" % "2.0.17"
+        "io.getquill" %% "quill-jdbc" % "4.8.6",
+        "org.slf4j" % "slf4j-api" % "2.0.17",
+        "org.virtuslab" %% "scala-yaml" % "0.3.1"
       )
     )
 
 lazy val root =
   project
     .in(file("."))
-    .aggregate(blog, markdownRenderer, play, zioHttp)
+    .aggregate(blog, markdownRenderer, play, zio)

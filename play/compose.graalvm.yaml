@@ -1,8 +1,8 @@
 services:
   blog-play:
     build:
-      context: .
-      dockerfile: Dockerfile.graalvm
+      context: ..
+      dockerfile: play/Dockerfile.graalvm
     ports:
       - "${PORT:-9000}:9000"
     environment:

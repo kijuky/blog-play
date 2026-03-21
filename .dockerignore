@@ -1,7 +1,11 @@
+.DS_Store
 .bsp
-.git
 .idea
 target
+
+.env*
+Dockerfile*
+compose*.yaml
 
 play/data/*
 !play/data/.gitkeep

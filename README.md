@@ -21,18 +21,18 @@ mise run play:run
 # ネイティブバイナリ生成
 sbt "play / GraalVMNativeImage / packageBin"
 
-# コンテナ起動（native-image 版）
+# ネイティブバイナリ起動
 mise run play:graalvm
 ```
 
 ## ZIO HTTP サブプロジェクト
 
 ```bash
-mise run zio-http:run
+mise run zio:run
 ```
 
 - ポートは `ZIO_HTTP_PORT`（デフォルト `9001`）。
-- Play と同じ DB 初期化/インポート処理を起動時に実行します。
+- Play と同じ DB 初期化/インポート処理を起動時に実行します（`play` モジュールには依存しません）。
 - 一覧は `GET /`、詳細は `GET /blog/:stableId`。
 
 ## Docker (本番想定)

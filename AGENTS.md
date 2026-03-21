@@ -11,7 +11,9 @@
 - `blog/src/main/resources/blog` はブログデータ専用リポジトリを submodule として取り込む。
 - 起動時に `blog/src/main/resources/blog/**/meta.yaml` を読み取り、DB（H2）を構築する（viewer 用）。
 - `macwire` は使わない。
-- リポジトリはマルチモジュール構成（`play` / `zioHttp` / `markdownRenderer` / `blog`）。
+- リポジトリはマルチモジュール構成（`play` / `zio` / `markdownRenderer` / `blog`）。
+- `zio` モジュールは `play` モジュールに依存しない（独立起動）。
+- `zio` モジュールの DB アクセスは Quill を使う（ScalikeJDBC は使わない）。
 
 ## 起動時フロー
 
@@ -80,7 +82,7 @@
 - 初期化: `mise install` / `sbt compile`
 - 起動: `mise run play:run`
 - Play (native image): `sbt "play / GraalVMNativeImage / packageBin"` / `mise run play:graalvm`
-- ZIO HTTP: `mise run zio-http:run`（`GET /` と `GET /blog/:stableId`）
+- ZIO HTTP: `mise run zio:run`（`GET /` と `GET /blog/:stableId`）
 
 ## 命名・実装方針（継続的な合意）
 

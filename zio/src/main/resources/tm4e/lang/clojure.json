@@ -1,0 +1,33 @@
+{
+  "name": "Clojure (Minimal)",
+  "scopeName": "source.clojure",
+  "fileTypes": ["clj"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.semicolon.clojure", "match": ";.*$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.clojure", "begin": "\"", "end": "\"", "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.clojure" } ] }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.clojure", "match": "\\b(def|defn|let|if|do|fn|loop|recur|when|cond|case|try|catch|finally|throw)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.clojure", "match": "-?\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

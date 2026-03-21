@@ -1,0 +1,28 @@
+{
+  "name": "XML (Minimal)",
+  "scopeName": "text.xml",
+  "fileTypes": ["xml"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#tags" },
+    { "include": "#strings" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.block.xml", "begin": "<!--", "end": "-->" }
+      ]
+    },
+    "tags": {
+      "patterns": [
+        { "name": "meta.tag.xml", "match": "</?[A-Za-z_][A-Za-z0-9_:\\-\\.]*" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.xml", "begin": "\"", "end": "\"" },
+        { "name": "string.quoted.single.xml", "begin": "'", "end": "'" }
+      ]
+    }
+  }
+}

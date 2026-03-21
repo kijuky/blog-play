@@ -1,0 +1,36 @@
+{
+  "name": "Blog Dark",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#1b1a17",
+    "editor.foreground": "#e8e1d8"
+  },
+  "tokenColors": [
+    {
+      "scope": "comment",
+      "settings": {
+        "foreground": "#8a8175",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": "string",
+      "settings": {
+        "foreground": "#f2c14e"
+      }
+    },
+    {
+      "scope": "keyword",
+      "settings": {
+        "foreground": "#f4a261",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": "constant.numeric",
+      "settings": {
+        "foreground": "#caa6f7"
+      }
+    }
+  ]
+}
