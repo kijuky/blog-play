@@ -3,6 +3,9 @@ COPY ./ /app/
 WORKDIR /app
 
 FROM build AS agent
+RUN sbt play/Universal/stage
+ENV JAVA_OPTS=-agentlib:native-image-agent=config-output-dir=metadata
+ENTRYPOINT ["play/target/universal/stage/bin/blog-play"]
 
 FROM build AS native-build
 RUN sbt play/GraalVMNativeImage/packageBin

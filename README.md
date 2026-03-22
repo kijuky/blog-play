@@ -25,13 +25,19 @@ mise run play:run
 
 ```shell
 cp play/.env.example play/.env
-mise run play:up
+mise run play:docker:up
 ```
 
 ## Run (Play / Native Image)
 
 ```shell
-mise run play:graalvm
+mise run play:graalvm:up
+```
+
+### Run (Play / Native Image Agent)
+
+```shell
+mise run play:graalvm:agent
 ```
 
 ## Run (ZIO HTTP)
