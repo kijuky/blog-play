@@ -99,11 +99,11 @@ lazy val play =
         Seq(
           filters,
           "com.h2database" % "h2" % "2.4.240",
-          "org.webjars.npm" % "mermaid" % "11.2.1",
+          "org.jsoup" % "jsoup" % "1.22.1",
           "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
           "org.scalikejdbc" %% "scalikejdbc-config" % "4.3.5",
-          "org.jsoup" % "jsoup" % "1.22.1",
           "org.virtuslab" %% "scala-yaml" % "0.3.1",
+          "org.webjars.npm" % "mermaid" % "11.12.3",
           "org.scalatest" %% "scalatest-funsuite" % "3.2.17" % Test
         ),
 
