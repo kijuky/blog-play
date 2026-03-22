@@ -1,11 +1,10 @@
 package loader
 
-import io.github.classgraph.ClassGraph
 import play.api.Application
 import play.api.ApplicationLoader
 import play.api.BuiltInComponentsFromContext
-import play.api.Logging
 import play.api.LoggerConfigurator
+import play.api.Logging
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
 import router.Routes
@@ -20,7 +19,7 @@ import services.Tm4eHighlighter
 
 import java.time.ZoneId
 import scala.concurrent.Future
-import scala.jdk.CollectionConverters.*
+import scala.io.Source
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Using
@@ -50,28 +49,21 @@ final class MyComponents(context: ApplicationLoader.Context)
   private given zoneId: ZoneId = ZoneId.systemDefault
   DB.localTx { case given DBSession =>
     val metaURLs = {
-      Using(ClassGraph().acceptPaths("blog").scan())(
-        _.getAllResources
-          .filter(_.getPath.endsWith("meta.yaml"))
-          .asScala
-          .map(_.getURL)
-          .toSeq
+      Using(Source.fromResource("blog.txt"))(
+        _.getLines.map(getClass.getClassLoader.getResource).toSeq
       ).fold(throw _, identity)
     }
     val markdownRenderer = {
-      val languages =
-        Using(ClassGraph().acceptPaths("tm4e/lang").scan())(
-          _.getAllResources
-            .filter(_.getPath.endsWith(".json"))
-            .asScala
-            .toSeq
-        ).fold(throw _, identity)
+      val languages = {
+        Using(Source.fromResource("tm4e-lang.txt"))(_.getLines.toSeq)
+          .fold(throw _, identity)
+      }
       val grammars = {
         languages.flatMap(l =>
-          services.GrammarSpec.from(l.getPath) match {
+          services.GrammarSpec.from(l) match {
             case Success(v) => Some(v)
             case Failure(e) =>
-              logger.error(s"Failed to parse tm4e grammar: ${l.getPath}", e)
+              logger.error(s"Failed to parse tm4e grammar: $l", e)
               None
           }
         )

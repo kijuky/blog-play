@@ -20,7 +20,7 @@ final case class GrammarSpec(
 ) {
   def grammarAbsolutePath: String =
     if (grammarPath.startsWith("/")) grammarPath
-    else s"/${grammarPath}"
+    else s"/$grammarPath"
 }
 
 object GrammarSpec {

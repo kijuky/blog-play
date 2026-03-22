@@ -2,7 +2,6 @@ package ziohttpapp
 
 import com.typesafe.config.ConfigFactory
 import io.getquill.*
-import io.github.classgraph.ClassGraph
 import org.slf4j.LoggerFactory
 import org.virtuslab.yaml.*
 import services.GrammarSpec
@@ -261,19 +260,15 @@ object ZioHttpMain extends ZIOAppDefault {
   private def initRenderer(): MarkdownRenderer = {
     val classLoader = Thread.currentThread.getContextClassLoader
     val languages =
-      Using(ClassGraph().acceptPaths("tm4e/lang").scan())(
-        _.getAllResources
-          .filter(_.getPath.endsWith(".json"))
-          .asScala
-          .toSeq
-      ).fold(throw _, identity)
+      Using(Source.fromResource("tm4e-lang.txt"))(_.getLines.map(x => s"/$x"))
+        .fold(throw _, _.toSeq)
 
     val grammars =
       languages.flatMap(language =>
-        GrammarSpec.from(language.getPath) match {
+        GrammarSpec.from(language) match {
           case Success(v) => Some(v)
           case Failure(e) =>
-            logger.error(s"Failed to parse tm4e grammar: ${language.getPath}", e)
+            logger.error(s"Failed to parse tm4e grammar: ${language}", e)
             None
         }
       )
@@ -307,13 +302,9 @@ object ZioHttpMain extends ZIOAppDefault {
       executeSqlScript(conn, initSql)
 
       val metaUrls =
-        Using(ClassGraph().acceptPaths("blog").scan())(
-          _.getAllResources
-            .filter(_.getPath.endsWith("meta.yaml"))
-            .asScala
-            .map(_.getURL)
-            .toSeq
-        ).fold(throw _, identity)
+        Using(Source.fromResource("blog.txt"))(
+          _.getLines.map(getClass.getClassLoader.getResource)
+        ).fold(throw _, _.toSeq)
 
       metaUrls.foreach(metaUrl => importOne(conn, metaUrl, renderer).fold(err => throw RuntimeException(err), identity))
       conn.commit()

@@ -1,3 +1,5 @@
+import java.nio.charset.StandardCharsets
+
 ThisBuild / organization := "io.github.kijuky"
 ThisBuild / scalaVersion := "3.8.1"
 
@@ -8,10 +10,31 @@ lazy val blog =
       // project
       name := "blog",
 
-      // libraries
-      libraryDependencies ++= Seq(
-        "io.github.classgraph" % "classgraph" % "4.8.184"
-      )
+      // resource list
+      Compile / resourceGenerators += Def.task {
+        val outDir = (Compile / resourceManaged).value
+        val out = outDir / "blog.txt"
+        val root = (Compile / resourceDirectory).value / "blog"
+        val cacheBase = streams.value.cacheDirectory / "blog-cache"
+        val inputs = (root ** "meta.yaml").get.toSet
+        val cachedGen =
+          FileFunction.cached(
+            cacheBase,
+            inStyle = FilesInfo.hash,
+            outStyle = FilesInfo.exists
+          ) { _ =>
+            val lines =
+              inputs.toSeq
+                .flatMap(IO.relativize((Compile / resourceDirectory).value, _))
+                .map(_.replace('\\', '/'))
+                .sorted
+            IO.writeLines(out, lines, StandardCharsets.UTF_8)
+            Set(out)
+          }
+        cachedGen(inputs).toSeq
+      }.taskValue,
+      Compile / products :=
+        (Compile / products).dependsOn(Compile / resources).value
     )
 
 lazy val markdownRenderer =
@@ -33,7 +56,33 @@ lazy val markdownRenderer =
         "org.jruby.jcodings" % "jcodings" % "1.0.64" % Runtime,
         "org.scalatest" %% "scalatest-funsuite" % "3.2.17" % Test,
         "org.slf4j" % "slf4j-api" % "2.0.17"
-      )
+      ),
+
+      // resource list
+      Compile / resourceGenerators += Def.task {
+        val outDir = (Compile / resourceManaged).value
+        val out = outDir / "tm4e-lang.txt"
+        val root = (Compile / resourceDirectory).value / "tm4e" / "lang"
+        val cacheBase = streams.value.cacheDirectory / "tm4e-lang-cache"
+        val inputs = (root ** "*.json").get.toSet
+        val cachedGen =
+          FileFunction.cached(
+            cacheBase,
+            inStyle = FilesInfo.hash,
+            outStyle = FilesInfo.exists
+          ) { _ =>
+            val lines =
+              inputs.toSeq
+                .flatMap(IO.relativize((Compile / resourceDirectory).value, _))
+                .map(_.replace('\\', '/'))
+                .sorted
+            IO.writeLines(out, lines, StandardCharsets.UTF_8)
+            Set(out)
+          }
+        cachedGen(inputs).toSeq
+      }.taskValue,
+      Compile / products :=
+        (Compile / products).dependsOn(Compile / resources).value
     )
 
 lazy val play =
@@ -81,7 +130,7 @@ lazy val play =
     .settings(
       PlayKeys.externalizeResources := false,
       graalVMNativeImageOptions ++= Seq(
-        "-J-Xmx10G",
+        "-J-Xmx12G",
         "--allow-incomplete-classpath",
         "--enable-http",
         "--install-exit-handlers",

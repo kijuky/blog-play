@@ -1,6 +1,5 @@
 package services
 
-import io.github.classgraph.ClassGraph
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
@@ -11,11 +10,8 @@ import scalikejdbc.SQL
 
 import java.io.File
 import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.ZoneId
-import scala.jdk.CollectionConverters.*
+import scala.io.Source
 import scala.util.Using
 
 class BlogImporterSpec
@@ -24,17 +20,7 @@ class BlogImporterSpec
     with BeforeAndAfterEach {
   private val sut = BlogImporter()(using ZoneId.systemDefault)
   private val noRenderer = NoRenderer()
-  private val metas = {
-    Using(ClassGraph().acceptPaths("services/blogimporterspec").scan())(
-      _.getAllResources.asScala
-        .filter(_.getPath.endsWith("meta.yaml"))
-        .map(_.getURL)
-        .toSeq
-    ).getOrElse {
-      fail("Test resource not found: services/blogimporterspec/**/meta.yaml")
-    }
-  }
-  private val initSqlPath = resourcePath("services/blogimporterspec/init.sql")
+  private val initSqlUrl = resourcePath("services/blogimporterspec/init.sql")
 
   override def beforeAll(): Unit = {
     ConnectionPool.singleton(
@@ -46,12 +32,14 @@ class BlogImporterSpec
 
   override def beforeEach(): Unit = {
     DB.autoCommit { case given DBSession =>
-      Files
-        .readString(initSqlPath)
-        .split(";")
-        .map(_.trim)
-        .filter(_.nonEmpty)
-        .foreach(SQL(_).execute.apply())
+      Using(Source.fromURL(initSqlUrl))(
+        _.getLines
+          .mkString("\n")
+          .split(";")
+          .map(_.trim)
+          .filter(_.nonEmpty)
+          .foreach(SQL(_).execute.apply())
+      )
     }
   }
 
@@ -153,7 +141,13 @@ class BlogImporterSpec
 
   test("source resolution uses github vs archive source") {
     DB.autoCommit { case given DBSession =>
-      val metaUrls = filterMetas("blog/")
+      val metaUrls =
+        Seq(
+          "blog/00_archive/hatena_example/01_test",
+          "blog/01_test",
+          "blog/02_offset_date",
+          "blog/03"
+        ).map(findMeta)
       val actual = sut.importAllEither(metaUrls, noRenderer)
       assert(actual.isRight)
 
@@ -212,19 +206,12 @@ class BlogImporterSpec
     }
   }
 
-  private def resourcePath(name: String): Path = {
-    val url =
-      Option(getClass.getClassLoader.getResource(name))
-        .getOrElse { fail(s"Test resource not found: $name") }
-    Paths.get(url.toURI)
-  }
-
   private def findMeta(name: String): URL = {
-    filterMetas(name).headOption
-      .getOrElse { fail(s"Test resource not found: $name") }
+    resourcePath(s"services/blogimporterspec/$name/meta.yaml")
   }
 
-  private def filterMetas(name: String): Seq[URL] = {
-    metas.filter(_.getPath.contains(name))
+  private def resourcePath(name: String): URL = {
+    Option(getClass.getClassLoader.getResource(name))
+      .getOrElse { fail(s"Test resource not found: $name") }
   }
 }
