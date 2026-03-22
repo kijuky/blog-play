@@ -83,6 +83,19 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
   }
 
   override def render(markdown: String, contentUrl: Option[URL]): String = {
+    val (normalizedMarkdown, noteBlocks) =
+      extractQuotedNoteBlocks(markdown, contentUrl)
+    val html = renderCore(normalizedMarkdown, contentUrl)
+
+    noteBlocks.foldLeft(html) { case (acc, (token, blockHtml)) =>
+      acc
+        .replace(s"<p>$token</p>\n", s"$blockHtml\n")
+        .replace(s"<p>$token</p>", blockHtml)
+        .replace(token, blockHtml)
+    }
+  }
+
+  private def renderCore(markdown: String, contentUrl: Option[URL]): String = {
     val doc = parser.parse(markdown)
 
     doc.accept(new AbstractVisitor {
@@ -129,6 +142,78 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
     })
 
     renderer.render(doc)
+  }
+
+  private def extractQuotedNoteBlocks(
+    markdown: String,
+    contentUrl: Option[URL]
+  ): (String, Seq[(String, String)]) = {
+    val headerPattern =
+      raw"(?i)^\s*>\s*\*\*(Info|Warn|Alert):\*\*\s*$$".r
+    val quoteLinePattern = raw"^\s*>\s?(.*)$$".r
+
+    @annotation.tailrec
+    def collectQuoteBody(
+      remaining: List[String],
+      acc: List[String]
+    ): (List[String], List[String]) = remaining match {
+      case quoteLinePattern(text) :: rest =>
+        collectQuoteBody(rest, text :: acc)
+      case _ =>
+        (remaining, acc.reverse)
+    }
+
+    @annotation.tailrec
+    def loop(
+      remaining: List[String],
+      nextIndex: Int,
+      normalizedAcc: List[String],
+      blockAcc: List[(String, String)]
+    ): (List[String], List[(String, String)]) = remaining match {
+      case Nil => (normalizedAcc.reverse, blockAcc.reverse)
+      case line :: rest =>
+        line match {
+          case headerPattern(rawKind) =>
+            val (afterBody, bodyLines) = collectQuoteBody(rest, Nil)
+            val token = s"@@QIITA_QUOTED_NOTE_BLOCK_$nextIndex@@"
+            val kind = normalizeQiitaNoteKind(rawKind)
+            val bodyMarkdown = bodyLines.mkString("\n")
+            val blockHtml = renderNoteBlock(kind, bodyMarkdown, contentUrl)
+            loop(afterBody, nextIndex + 1, token :: normalizedAcc, (token, blockHtml) :: blockAcc)
+          case _ =>
+            loop(rest, nextIndex, line :: normalizedAcc, blockAcc)
+        }
+    }
+
+    val (normalizedLines, blocks) = loop(markdown.linesIterator.toList, 0, Nil, Nil)
+    (normalizedLines.mkString("\n"), blocks)
+  }
+
+  private def normalizeQiitaNoteKind(kind: String): String = {
+    kind.trim.toLowerCase match {
+      case "" | "info" => "info"
+      case "warn"      => "warn"
+      case "alert"     => "alert"
+      case _           => "info"
+    }
+  }
+
+  private def qiitaNoteTitle(kind: String): String = {
+    kind match {
+      case "warn"  => "Warn"
+      case "alert" => "Alert"
+      case _       => "Info"
+    }
+  }
+
+  private def renderNoteBlock(
+    kind: String,
+    bodyMarkdown: String,
+    contentUrl: Option[URL]
+  ): String = {
+    val title = qiitaNoteTitle(kind)
+    val bodyHtml = renderCore(bodyMarkdown, contentUrl)
+    s"""<div class="qiita-note qiita-note--$kind"><div class="qiita-note-head">$title</div><div class="qiita-note-body">$bodyHtml</div></div>"""
   }
 
   private def decodeForDisplay(value: String): String = {

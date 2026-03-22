@@ -276,6 +276,62 @@ a:hover {
   background: rgba(210, 91, 44, 0.16);
 }
 
+.post-body .qiita-note {
+  margin: 18px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 18, 12, 0.12);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.post-body .qiita-note-head {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: "Avenir Next", "Futura", "Gill Sans", "Optima", sans-serif;
+}
+
+.post-body .qiita-note-body {
+  padding: 14px 14px 12px;
+}
+
+.post-body .qiita-note-body > :first-child {
+  margin-top: 0;
+}
+
+.post-body .qiita-note-body > :last-child {
+  margin-bottom: 0;
+}
+
+.post-body .qiita-note--info {
+  border-color: rgba(46, 111, 91, 0.3);
+}
+
+.post-body .qiita-note--info .qiita-note-head {
+  color: #184d3d;
+  background: rgba(46, 111, 91, 0.15);
+}
+
+.post-body .qiita-note--warn {
+  border-color: rgba(210, 140, 44, 0.4);
+}
+
+.post-body .qiita-note--warn .qiita-note-head {
+  color: #6e4a17;
+  background: rgba(210, 140, 44, 0.22);
+}
+
+.post-body .qiita-note--alert {
+  border-color: rgba(191, 60, 45, 0.45);
+}
+
+.post-body .qiita-note--alert .qiita-note-head {
+  color: #71261d;
+  background: rgba(191, 60, 45, 0.2);
+}
+
 .back-link {
   display: inline-flex;
   gap: 8px;

@@ -143,6 +143,61 @@ class MarkdownRendererImplSpec extends AnyFunSuite {
     assert(actual.contains("""class="code-filename">Main.scala"""))
   }
 
+  test("render quoted info block as qiita note") {
+    val sut = MarkdownRendererImpl()
+
+    val markdown =
+      """> **Info:**
+        |> インフォメーション
+        |> これは引用ではなくノートとして表示したい。
+        |""".stripMargin
+    val actual = sut.render(markdown)
+
+    assert(actual.contains("""class="qiita-note qiita-note--info""""))
+    assert(actual.contains("""<div class="qiita-note-head">Info</div>"""))
+    assert(actual.contains("""これは引用ではなくノートとして表示したい。"""))
+  }
+
+  test("render quoted warn block as qiita note") {
+    val sut = MarkdownRendererImpl()
+
+    val markdown =
+      """> **Warn:**
+        |> 警告
+        |> 注意してください
+        |""".stripMargin
+    val actual = sut.render(markdown)
+
+    assert(actual.contains("""class="qiita-note qiita-note--warn""""))
+    assert(actual.contains("""<div class="qiita-note-head">Warn</div>"""))
+  }
+
+  test("render quoted alert block as qiita note") {
+    val sut = MarkdownRendererImpl()
+
+    val markdown =
+      """> **Alert:**
+        |> より強い警告
+        |> しないでください
+        |""".stripMargin
+    val actual = sut.render(markdown)
+
+    assert(actual.contains("""class="qiita-note qiita-note--alert""""))
+    assert(actual.contains("""<div class="qiita-note-head">Alert</div>"""))
+  }
+
+  test("quoted note header is case insensitive") {
+    val sut = MarkdownRendererImpl()
+
+    val markdown =
+      """> **wArN:**
+        |> case insensitive
+        |""".stripMargin
+    val actual = sut.render(markdown)
+
+    assert(actual.contains("""class="qiita-note qiita-note--warn""""))
+  }
+
   private def resource(name: String): URL = {
     val fullname = s"services/markdownrendererimplspec/$name"
     Option(getClass.getClassLoader.getResource(fullname))
