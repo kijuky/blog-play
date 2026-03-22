@@ -5,7 +5,9 @@ import play.api.ApplicationLoader
 import play.api.BuiltInComponentsFromContext
 import play.api.LoggerConfigurator
 import play.api.Logging
+import play.api.mvc.EssentialFilter
 import play.api.routing.Router
+import play.filters.csp.CSPComponents
 import play.filters.HttpFiltersComponents
 import router.Routes
 import scalikejdbc.DB
@@ -36,8 +38,12 @@ class AppLoader extends ApplicationLoader {
 final class MyComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
     with HttpFiltersComponents
+    with CSPComponents
     with controllers.AssetsComponents
     with Logging {
+  override lazy val httpFilters: Seq[EssentialFilter] =
+    Seq(cspFilter)
+
   private val ogpClient = HttpOgpClient()
 
   // Initialize ScalikeJDBC connection pools at startup

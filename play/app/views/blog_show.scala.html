@@ -1,38 +1,40 @@
 @import play.api.i18n.Messages
-@(post: controllers.BlogItem)(using messages: Messages)
+@import play.api.mvc.RequestHeader
+@(post: controllers.BlogItem)(using request: RequestHeader, messages: Messages)
 @defining(routes.OgpController.fetch(url = "https://example.invalid", text = None).path.takeWhile(_ != '?')) { ogpEndpoint =>
-
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }</title>
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
-  </head>
-  <body data-ogp-endpoint="@ogpEndpoint">
-    <div class="container">
-      <p><a class="back-link" href="@routes.BlogListController.list()">@messages("blog.back")</a></p>
-      <header class="header">
-        <div class="brand">
-          @if(post.isDraft) {
-            <i class="draft draft--lg" aria-label="@messages("blog.draft")" title="@messages("blog.draft")"></i>
-          }
-          @if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }
-        </div>
-        <div class="subtitle">@post.displayDate</div>
-      </header>
-      <section class="card post-body">
-        @post.body
-      </section>
-    </div>
-    <script src="@routes.Assets.versioned("lib/mermaid/dist/mermaid.min.js")"></script>
-    <script src="@routes.Assets.versioned("javascripts/blog-show.js")"></script>
-    <script>
-      if (window.mermaid) {
-        window.mermaid.initialize({ startOnLoad: true });
+  <!DOCTYPE html>
+  <html lang="ja">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>@if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }</title>
+    <link rel="icon" type="image/svg+xml" href="@routes.Assets.versioned("images/favicon.svg")" />
+      <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
+    </head>
+    <body data-ogp-endpoint="@ogpEndpoint">
+      <div class="container">
+        <p><a class="back-link" href="@routes.BlogListController.list()">@messages("blog.back")</a></p>
+        <header class="header">
+          <div class="brand">
+            @if(post.isDraft) {
+              <i class="draft draft--lg" aria-label="@messages("blog.draft")" title="@messages("blog.draft")"></i>
+            }
+            @if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }
+          </div>
+          <div class="subtitle">@post.displayDate</div>
+        </header>
+        <section class="card post-body">
+          @post.body
+        </section>
+      </div>
+      <script src="@routes.Assets.versioned("lib/mermaid/dist/mermaid.min.js")"></script>
+      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+      @views.html.helper.script() {
+        if (window.mermaid) {
+          window.mermaid.initialize({ startOnLoad: true });
+        }
       }
-    </script>
-  </body>
-</html>
+      <script src="@routes.Assets.versioned("javascripts/blog-ogp.js")"></script>
+    </body>
+  </html>
 }

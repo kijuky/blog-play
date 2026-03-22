@@ -6,6 +6,7 @@ import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
+import play.api.mvc.RequestHeader
 import play.twirl.api.Html
 import scalikejdbc.DB
 import scalikejdbc.DBSession
@@ -46,6 +47,7 @@ class BlogShowController(cc: ControllerComponents, messagesApi: MessagesApi)(
   def show(stableId: String): Action[AnyContent] =
     Action.async { request =>
       given messages: Messages = messagesApi.preferred(request)
+      given RequestHeader = request
       DB.futureLocalTx { case given DBSession =>
         Future.successful(
           SQL(
