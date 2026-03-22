@@ -420,6 +420,26 @@ a:hover {
   text-overflow: ellipsis;
 }
 
+.youtube-embed {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(25, 18, 12, 0.1);
+  box-shadow: 0 10px 20px rgba(25, 18, 12, 0.1);
+  background: #000;
+}
+
+.youtube-embed-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 @media (max-width: 720px) {
   .header {
     flex-direction: column;

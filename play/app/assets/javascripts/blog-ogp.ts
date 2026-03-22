@@ -10,6 +10,7 @@
 
   type RenderTarget =
     | { kind: "twitter"; url: string }
+    | { kind: "youtube"; url: string }
     | { kind: "ogp"; url: string };
 
   type LinkEntry = {
@@ -81,8 +82,35 @@
     }
   };
 
+  const isYouTubeUrl = (url: string): boolean => {
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      const isHost =
+        host === "youtube.com" ||
+        host.endsWith(".youtube.com") ||
+        host === "youtu.be" ||
+        host.endsWith(".youtu.be");
+      if (!isHost) {
+        return false;
+      }
+      return (
+        parsed.pathname === "/watch" ||
+        parsed.pathname.startsWith("/shorts/") ||
+        parsed.pathname.startsWith("/embed/") ||
+        (host.includes("youtu.be") && parsed.pathname.length > 1)
+      );
+    } catch {
+      return false;
+    }
+  };
+
   const classify = (url: string): RenderTarget =>
-    isTwitterUrl(url) ? { kind: "twitter", url } : { kind: "ogp", url };
+    isTwitterUrl(url)
+      ? { kind: "twitter", url }
+      : isYouTubeUrl(url)
+        ? { kind: "youtube", url }
+        : { kind: "ogp", url };
 
   const toTwitterStatusUrl = (rawUrl: string): string => {
     const parsed = new URL(rawUrl);
@@ -166,6 +194,61 @@
     return wrapper;
   };
 
+  const toYouTubeEmbedUrl = (rawUrl: string): string | null => {
+    try {
+      const parsed = new URL(rawUrl);
+      const host = parsed.hostname.toLowerCase();
+      let videoId = "";
+
+      if (host.includes("youtu.be")) {
+        videoId = parsed.pathname.replace(/^\/+/, "").split("/")[0] || "";
+      } else if (parsed.pathname === "/watch") {
+        videoId = parsed.searchParams.get("v") ?? "";
+      } else if (parsed.pathname.startsWith("/shorts/")) {
+        videoId = parsed.pathname.split("/")[2] || "";
+      } else if (parsed.pathname.startsWith("/embed/")) {
+        videoId = parsed.pathname.split("/")[2] || "";
+      }
+
+      if (!videoId) {
+        return null;
+      }
+
+      const embedUrl = new URL(`https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}`);
+      const start = parsed.searchParams.get("t") ?? parsed.searchParams.get("start");
+      if (start) {
+        embedUrl.searchParams.set("start", start.replace(/s$/i, ""));
+      }
+      return embedUrl.toString();
+    } catch {
+      return null;
+    }
+  };
+
+  const createYouTubeEmbed = (url: string): HTMLElement => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "link-preview-inline youtube-embed-inline";
+
+    const frameWrap = document.createElement("div");
+    frameWrap.className = "youtube-embed";
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "youtube-embed-frame";
+    iframe.src = toYouTubeEmbedUrl(url) ?? url;
+    iframe.title = "YouTube video player";
+    iframe.loading = "lazy";
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.setAttribute(
+      "allow",
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    );
+
+    frameWrap.appendChild(iframe);
+    wrapper.appendChild(frameWrap);
+    return wrapper;
+  };
+
   const fetchPreview = async (url: string): Promise<Preview> => {
     const text = linkTextByHref.get(url) ?? "";
     try {
@@ -192,6 +275,10 @@
       const target = classify(entry.href);
       if (target.kind === "twitter") {
         entry.paragraph.replaceWith(createTwitterEmbed(target.url));
+        return;
+      }
+      if (target.kind === "youtube") {
+        entry.paragraph.replaceWith(createYouTubeEmbed(target.url));
         return;
       }
 
