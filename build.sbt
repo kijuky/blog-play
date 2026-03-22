@@ -102,6 +102,7 @@ lazy val play =
           "org.webjars.npm" % "mermaid" % "11.2.1",
           "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
           "org.scalikejdbc" %% "scalikejdbc-config" % "4.3.5",
+          "org.jsoup" % "jsoup" % "1.22.1",
           "org.virtuslab" %% "scala-yaml" % "0.3.1",
           "org.scalatest" %% "scalatest-funsuite" % "3.2.17" % Test
         ),

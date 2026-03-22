@@ -3,4 +3,5 @@
 # ~~~~
 GET     /         controllers.BlogListController.list()
 GET     /blog/:stableId controllers.BlogShowController.show(stableId: String)
+GET     /api/ogp controllers.OgpController.fetch(url: String, text: Option[String])
 GET     /assets/*file  controllers.Assets.versioned(path="/public", file: Asset)

@@ -13,6 +13,7 @@ import scalikejdbc.DBSession
 import scalikejdbc.config.DBs
 import services.BlogImporter
 import services.DbInitializer
+import services.HttpOgpClient
 import services.MarkdownRendererImpl
 import services.SqlLogging
 import services.Tm4eHighlighter
@@ -37,6 +38,7 @@ final class MyComponents(context: ApplicationLoader.Context)
     with HttpFiltersComponents
     with controllers.AssetsComponents
     with Logging {
+  private val ogpClient = HttpOgpClient()
 
   // Initialize ScalikeJDBC connection pools at startup
   DBs.setupAll()
@@ -90,9 +92,17 @@ final class MyComponents(context: ApplicationLoader.Context)
     controllers.BlogListController(controllerComponents, messagesApi)
   private lazy val blogShowController =
     controllers.BlogShowController(controllerComponents, messagesApi)
+  private lazy val ogpController =
+    controllers.OgpController(controllerComponents, ogpClient)
 
   // router
 
   override def router: Router =
-    Routes(httpErrorHandler, blogListController, blogShowController, assets)
+    Routes(
+      httpErrorHandler,
+      blogListController,
+      blogShowController,
+      ogpController,
+      assets
+    )
 }

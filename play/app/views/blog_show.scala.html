@@ -1,5 +1,6 @@
 @import play.api.i18n.Messages
 @(post: controllers.BlogItem)(using messages: Messages)
+@defining(routes.OgpController.fetch(url = "https://example.invalid", text = None).path.takeWhile(_ != '?')) { ogpEndpoint =>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -9,7 +10,7 @@
     <title>@if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }</title>
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
   </head>
-  <body>
+  <body data-ogp-endpoint="@ogpEndpoint">
     <div class="container">
       <p><a class="back-link" href="@routes.BlogListController.list()">@messages("blog.back")</a></p>
       <header class="header">
@@ -26,6 +27,7 @@
       </section>
     </div>
     <script src="@routes.Assets.versioned("lib/mermaid/dist/mermaid.min.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/blog-show.js")"></script>
     <script>
       if (window.mermaid) {
         window.mermaid.initialize({ startOnLoad: true });
@@ -33,3 +35,4 @@
     </script>
   </body>
 </html>
+}

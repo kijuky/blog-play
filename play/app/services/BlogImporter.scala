@@ -5,7 +5,6 @@ import org.virtuslab.yaml.*
 import scalikejdbc.DBSession
 import scalikejdbc.SQL
 
-import java.net.URI
 import java.net.URL
 import java.time.Instant
 import java.time.LocalDateTime
