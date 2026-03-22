@@ -1,5 +1,7 @@
 package controllers
 
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
 import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
@@ -36,12 +38,14 @@ object BlogItem {
   }
 }
 
-class BlogShowController(cc: ControllerComponents)(using BlogDateTime)
-    extends AbstractController(cc) {
+class BlogShowController(cc: ControllerComponents, messagesApi: MessagesApi)(
+  using BlogDateTime
+) extends AbstractController(cc) {
   private given ExecutionContext = cc.executionContext
 
   def show(stableId: String): Action[AnyContent] =
-    Action.async {
+    Action.async { request =>
+      given messages: Messages = messagesApi.preferred(request)
       DB.futureLocalTx { case given DBSession =>
         Future.successful(
           SQL(
@@ -54,7 +58,7 @@ class BlogShowController(cc: ControllerComponents)(using BlogDateTime)
         )
       }.map {
         case Some(post) => Ok(views.html.blog_show(post))
-        case None       => NotFound("Blog not found")
+        case None       => NotFound(messages("blog.notFound"))
       }
     }
 }

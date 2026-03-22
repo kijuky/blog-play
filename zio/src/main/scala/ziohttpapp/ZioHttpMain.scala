@@ -51,7 +51,10 @@ final case class BlogDateTime(zoneId: ZoneId, formatter: DateTimeFormatter) {
 
 object BlogDateTime {
   def from(zoneId: ZoneId, rawPattern: Option[String]): BlogDateTime = {
-    BlogDateTime(zoneId, DateTimeFormatter.ofPattern(rawPattern.getOrElse("yyyy/MM/dd HH:mm")))
+    BlogDateTime(
+      zoneId,
+      DateTimeFormatter.ofPattern(rawPattern.getOrElse("yyyy/MM/dd HH:mm"))
+    )
   }
 }
 
@@ -78,7 +81,9 @@ object ZioHttpMain extends ZIOAppDefault {
   private val dateTime =
     BlogDateTime.from(
       summon[ZoneId],
-      Option.when(config.hasPath("blog.datetime.format"))(config.getString("blog.datetime.format"))
+      Option.when(config.hasPath("blog.datetime.format"))(
+        config.getString("blog.datetime.format")
+      )
     )
 
   private object Q extends H2JdbcContext(SnakeCase, "db.default")
@@ -157,23 +162,29 @@ object ZioHttpMain extends ZIOAppDefault {
       .attemptBlocking {
         val rows =
           Q.run(query[BlogListRow])
-            .sortBy(row => row.publishedAt.orElse(row.modifiedAt))(using Ordering.Option[String].reverse)
-        val body = rows
-          .map { row =>
-            val displayDate = dateTime.format(row.publishedAt.orElse(row.modifiedAt))
-            val title = if (row.title.nonEmpty) escape(row.title) else "(untitled)"
-            val draft = if (row.publishedAt.isEmpty) "<span class=\"draft\" title=\"Draft\">📝</span>" else ""
-            s"""
+            .sortBy(row => row.publishedAt.orElse(row.modifiedAt))(using
+              Ordering.Option[String].reverse
+            )
+        val body = rows.map { row =>
+          val displayDate =
+            dateTime.format(row.publishedAt.orElse(row.modifiedAt))
+          val title =
+            if (row.title.nonEmpty) escape(row.title) else "(untitled)"
+          val draft =
+            if (row.publishedAt.isEmpty)
+              "<span class=\"draft\" title=\"Draft\">📝</span>"
+            else ""
+          s"""
                |<li class="post-item">
-               |  <a class="post-title" href="/blog/${escapeAttr(row.stableId)}">${draft}${title}</a>
+               |  <a class="post-title" href="/blog/${escapeAttr(
+              row.stableId
+            )}">${draft}${title}</a>
                |  <span class="post-date">${escape(displayDate)}</span>
                |</li>
                |""".stripMargin
-          }
-          .mkString
+        }.mkString
 
-        htmlResponse(
-          s"""
+        htmlResponse(s"""
              |<div class="container">
              |  <header class="header">
              |    <div class="title">Blog Viewer (ZIO HTTP)</div>
@@ -185,26 +196,34 @@ object ZioHttpMain extends ZIOAppDefault {
              |    </ul>
              |  </section>
              |</div>
-             |""".stripMargin
-        )
+             |""".stripMargin)
       }
-      .catchAll(err => ZIO.succeed(Response.text(err.getMessage).status(Status.InternalServerError)))
+      .catchAll(err =>
+        ZIO.succeed(
+          Response.text(err.getMessage).status(Status.InternalServerError)
+        )
+      )
   }
 
   private def showResponse(stableId: String): ZIO[Any, Nothing, Response] = {
     ZIO
       .attemptBlocking {
-        Q.run(query[BlogShowRow].filter(_.stableId == lift(stableId))).headOption
+        Q.run(query[BlogShowRow].filter(_.stableId == lift(stableId)))
+          .headOption
       }
       .map {
         case None =>
           Response.text("Blog not found").status(Status.NotFound)
         case Some(row) =>
-          val displayDate = dateTime.format(row.publishedAt.orElse(row.modifiedAt))
-          val title = if (row.title.nonEmpty) escape(row.title) else "(untitled)"
-          val draft = if (row.publishedAt.isEmpty) "<span class=\"draft\" title=\"Draft\">📝</span>" else ""
-          htmlResponse(
-            s"""
+          val displayDate =
+            dateTime.format(row.publishedAt.orElse(row.modifiedAt))
+          val title =
+            if (row.title.nonEmpty) escape(row.title) else "(untitled)"
+          val draft =
+            if (row.publishedAt.isEmpty)
+              "<span class=\"draft\" title=\"Draft\">📝</span>"
+            else ""
+          htmlResponse(s"""
                |<div class="container">
                |  <a class="back" href="/">Back</a>
                |  <header class="header">
@@ -221,10 +240,13 @@ object ZioHttpMain extends ZIOAppDefault {
                |    window.mermaid.initialize({ startOnLoad: true });
                |  }
                |</script>
-               |""".stripMargin
-          )
+               |""".stripMargin)
       }
-      .catchAll(err => ZIO.succeed(Response.text(err.getMessage).status(Status.InternalServerError)))
+      .catchAll(err =>
+        ZIO.succeed(
+          Response.text(err.getMessage).status(Status.InternalServerError)
+        )
+      )
   }
 
   private def htmlResponse(content: String): Response = {
@@ -294,7 +316,9 @@ object ZioHttpMain extends ZIOAppDefault {
     val classLoader = Thread.currentThread.getContextClassLoader
     val initSql =
       Option(classLoader.getResourceAsStream("init.sql"))
-        .map(stream => Using.resource(Source.fromInputStream(stream))(src => src.mkString))
+        .map(stream =>
+          Using.resource(Source.fromInputStream(stream))(src => src.mkString)
+        )
         .getOrElse(throw RuntimeException("no such resource: init.sql"))
 
     withConnection(url, user, password) { conn =>
@@ -306,7 +330,10 @@ object ZioHttpMain extends ZIOAppDefault {
           _.getLines.map(getClass.getClassLoader.getResource)
         ).fold(throw _, _.toSeq)
 
-      metaUrls.foreach(metaUrl => importOne(conn, metaUrl, renderer).fold(err => throw RuntimeException(err), identity))
+      metaUrls.foreach(metaUrl =>
+        importOne(conn, metaUrl, renderer)
+          .fold(err => throw RuntimeException(err), identity)
+      )
       conn.commit()
     }
   }
@@ -318,7 +345,11 @@ object ZioHttpMain extends ZIOAppDefault {
     tags: Option[Seq[String]]
   ) derives YamlDecoder
 
-  private def importOne(conn: Connection, metaUrl: URL, renderer: MarkdownRenderer): Either[String, Unit] = {
+  private def importOne(
+    conn: Connection,
+    metaUrl: URL,
+    renderer: MarkdownRenderer
+  ): Either[String, Unit] = {
     readMeta(metaUrl).flatMap { meta =>
       val readmeUrl = URL(metaUrl, "README.md")
       for {
@@ -326,26 +357,43 @@ object ZioHttpMain extends ZIOAppDefault {
         stableId <- buildStableId(metaUrl, source)
         publishedAt <- normalizeDate(metaUrl, "published_at", meta.published_at)
         modifiedAt <- normalizeDate(metaUrl, "modified_at", meta.modified_at)
-        body <- renderer.render(readmeUrl).left.map(err => s"MissingBody(${readmeUrl},${err})")
+        body <- renderer
+          .render(readmeUrl)
+          .left
+          .map(err => s"MissingBody(${readmeUrl},${err})")
       } yield {
-        val blogId = insertBlog(conn, stableId, meta.title.getOrElse(""), body, publishedAt, modifiedAt, source)
-        meta.tags.getOrElse(Nil).foreach(tag => {
-          val tagId = findTagId(conn, tag).getOrElse(insertTag(conn, tag))
-          insertBlogTag(conn, blogId, tagId)
-        })
+        val blogId = insertBlog(
+          conn,
+          stableId,
+          meta.title.getOrElse(""),
+          body,
+          publishedAt,
+          modifiedAt,
+          source
+        )
+        meta.tags
+          .getOrElse(Nil)
+          .foreach(tag => {
+            val tagId = findTagId(conn, tag).getOrElse(insertTag(conn, tag))
+            insertBlogTag(conn, blogId, tagId)
+          })
       }
     }
   }
 
   private def readMeta(metaUrl: URL): Either[String, Meta] = {
-    Using(Source.fromURL(metaUrl))(_.mkString)
-      .toEither
-      .left
+    Using(Source.fromURL(metaUrl))(_.mkString).toEither.left
       .map(err => s"MissingRoot(${metaUrl},${err.getMessage})")
-      .flatMap(text => text.as[Meta].left.map(err => s"ParseError(${metaUrl},${err})"))
+      .flatMap(text =>
+        text.as[Meta].left.map(err => s"ParseError(${metaUrl},${err})")
+      )
   }
 
-  private def normalizeDate(metaUrl: URL, field: String, value: Option[String]): Either[String, Option[String]] = {
+  private def normalizeDate(
+    metaUrl: URL,
+    field: String,
+    value: Option[String]
+  ): Either[String, Option[String]] = {
     value match {
       case None =>
         Right(None)
@@ -366,11 +414,14 @@ object ZioHttpMain extends ZIOAppDefault {
   private def resolveSource(metaUrl: URL): String = {
     metaUrl.getPath.split("/").reverse match {
       case Array("meta.yaml", _, source, "00_archive", _*) => source
-      case _                                                 => "github"
+      case _                                               => "github"
     }
   }
 
-  private def buildStableId(metaUrl: URL, source: String): Either[String, String] = {
+  private def buildStableId(
+    metaUrl: URL,
+    source: String
+  ): Either[String, String] = {
     val parts = metaUrl.getPath.split("/").toSeq
     val dirName = parts.dropRight(1).lastOption.getOrElse("")
     val digitPrefix = dirName.takeWhile(_.isDigit)
@@ -385,7 +436,10 @@ object ZioHttpMain extends ZIOAppDefault {
       else if (underscorePrefix.nonEmpty) underscorePrefix
       else ""
 
-    if (prefix.isEmpty) Left(s"DirectoryError(${metaUrl},Invalid blog directory name: ${dirName})")
+    if (prefix.isEmpty)
+      Left(
+        s"DirectoryError(${metaUrl},Invalid blog directory name: ${dirName})"
+      )
     else Right(s"${source}-${prefix}")
   }
 
@@ -415,13 +469,16 @@ object ZioHttpMain extends ZIOAppDefault {
       stmt.setString(6, source)
       stmt.executeUpdate()
       Using.resource(stmt.getGeneratedKeys) { keys =>
-        if (keys.next()) keys.getLong(1) else throw RuntimeException("generated key missing")
+        if (keys.next()) keys.getLong(1)
+        else throw RuntimeException("generated key missing")
       }
     }
   }
 
   private def findTagId(conn: Connection, name: String): Option[Long] = {
-    Using.resource(conn.prepareStatement("select id from tags where name = ? limit 1")) { stmt =>
+    Using.resource(
+      conn.prepareStatement("select id from tags where name = ? limit 1")
+    ) { stmt =>
       stmt.setString(1, name)
       Using.resource(stmt.executeQuery()) { rs =>
         if (rs.next()) Some(rs.getLong("id")) else None
@@ -431,28 +488,32 @@ object ZioHttpMain extends ZIOAppDefault {
 
   private def insertTag(conn: Connection, name: String): Long = {
     Using.resource(
-      conn.prepareStatement("insert into tags (name) values (?)", Statement.RETURN_GENERATED_KEYS)
+      conn.prepareStatement(
+        "insert into tags (name) values (?)",
+        Statement.RETURN_GENERATED_KEYS
+      )
     ) { stmt =>
       stmt.setString(1, name)
       stmt.executeUpdate()
       Using.resource(stmt.getGeneratedKeys) { keys =>
-        if (keys.next()) keys.getLong(1) else throw RuntimeException("generated key missing")
+        if (keys.next()) keys.getLong(1)
+        else throw RuntimeException("generated key missing")
       }
     }
   }
 
-  private def insertBlogTag(conn: Connection, blogId: Long, tagId: Long): Unit = {
-    Using.resource(
-      conn.prepareStatement(
-        """
+  private def insertBlogTag(
+    conn: Connection,
+    blogId: Long,
+    tagId: Long
+  ): Unit = {
+    Using.resource(conn.prepareStatement("""
           |insert into blog_tags (blog_id, tag_id)
           |select ?, ?
           |where not exists (
           |  select 1 from blog_tags where blog_id = ? and tag_id = ?
           |)
-          |""".stripMargin
-      )
-    ) { stmt =>
+          |""".stripMargin)) { stmt =>
       stmt.setLong(1, blogId)
       stmt.setLong(2, tagId)
       stmt.setLong(3, blogId)
@@ -472,7 +533,9 @@ object ZioHttpMain extends ZIOAppDefault {
       })
   }
 
-  private def withConnection[A](url: String, user: String, password: String)(f: Connection => A): A = {
+  private def withConnection[A](url: String, user: String, password: String)(
+    f: Connection => A
+  ): A = {
     Using.resource(DriverManager.getConnection(url, user, password))(f)
   }
 

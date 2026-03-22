@@ -1,5 +1,7 @@
 package controllers
 
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
 import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
@@ -51,12 +53,14 @@ object BlogListViewItem {
   }
 }
 
-class BlogListController(cc: ControllerComponents)(using BlogDateTime)
-    extends AbstractController(cc) {
+class BlogListController(cc: ControllerComponents, messagesApi: MessagesApi)(
+  using BlogDateTime
+) extends AbstractController(cc) {
   private given ExecutionContext = cc.executionContext
 
   def list(): Action[AnyContent] =
-    Action.async {
+    Action.async { request =>
+      given Messages = messagesApi.preferred(request)
       DB.futureLocalTx { case given DBSession =>
         Future.successful(
           SQL(

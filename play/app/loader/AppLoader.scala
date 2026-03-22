@@ -87,9 +87,9 @@ final class MyComponents(context: ApplicationLoader.Context)
     controllers.BlogDateTime
       .from(zoneId, configuration.getOptional[String]("blog.datetime.format"))
   private lazy val blogListController =
-    controllers.BlogListController(controllerComponents)
+    controllers.BlogListController(controllerComponents, messagesApi)
   private lazy val blogShowController =
-    controllers.BlogShowController(controllerComponents)
+    controllers.BlogShowController(controllerComponents, messagesApi)
 
   // router
 

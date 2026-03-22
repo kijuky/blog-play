@@ -47,7 +47,10 @@ final class Tm4eHighlighter(grammars: Seq[GrammarSpec], themePath: URL)
   private val registry =
     Registry(new IRegistryOptions {
       override def getGrammarSource(scope: String): IGrammarSource =
-        scopeToPath.get(scope).map(IGrammarSource.fromResource(getClass, _)).orNull
+        scopeToPath
+          .get(scope)
+          .map(IGrammarSource.fromResource(getClass, _))
+          .orNull
     })
 
   private val grammarByLanguage =
