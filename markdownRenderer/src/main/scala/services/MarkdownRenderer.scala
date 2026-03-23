@@ -252,8 +252,8 @@ private final class CodeBlockNodeRenderer(
   override def render(node: Node): Unit =
     node match {
       case codeBlock: FencedCodeBlock =>
-        val info = Option(codeBlock.getInfo).getOrElse("").trim
-        val (language, fileName) = parseInfo(info, highlighter)
+        val head = Option(codeBlock.getInfo).getOrElse("").trim
+        val (language, fileName) = parseInfo(head, highlighter)
         val literal = Option(codeBlock.getLiteral).getOrElse("")
         val html = highlighter.highlight(literal, language)
 
@@ -292,14 +292,13 @@ private final class CodeBlockNodeRenderer(
     }
 
   private def parseInfo(
-    info: String,
+    head: String,
     highlighter: CodeHighlighter
   ): (Option[String], Option[String]) = {
-    val head = info.split("\\s+").headOption.getOrElse("")
     if (head.contains(":")) {
-      val parts = head.split(":", 2)
-      val lang = parts.headOption.map(_.trim).filter(_.nonEmpty)
-      val name = parts.lift(1).map(_.trim).filter(_.nonEmpty)
+      val parts = head.split(":", 2).map(_.trim)
+      val lang = parts.headOption.filter(_.nonEmpty)
+      val name = parts.lift(1).filter(_.nonEmpty)
       (lang.map(normalizeLanguageTag), name)
     } else {
       val trimmed = head.trim
