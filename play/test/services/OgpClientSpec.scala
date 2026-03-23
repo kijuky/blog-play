@@ -140,25 +140,23 @@ class OgpClientSpec extends AnyFunSuite {
     val title = "ディノス"
     val html =
       s"""
-         |<html>
-         |  <head>
-         |    <meta name="title" content="$title" />
-         |  </head>
-         |</html>
-         |""".stripMargin
+        |<html>
+        |  <head>
+        |    <meta name="title" content="$title" />
+        |  </head>
+        |</html>
+        |""".stripMargin
     val bytes = html.getBytes(Charset.forName("Shift_JIS"))
     val server = HttpServer.create(InetSocketAddress(0), 0)
     server.createContext(
       "/",
-      new HttpHandler {
-        override def handle(exchange: HttpExchange): Unit = {
-          exchange.getResponseHeaders
-            .add("Content-Type", "text/html; charset=Shift_JIS")
-          exchange.sendResponseHeaders(200, bytes.length.toLong)
-          val os = exchange.getResponseBody
-          os.write(bytes)
-          os.close()
-        }
+      exchange => {
+        exchange.getResponseHeaders
+          .add("Content-Type", "text/html; charset=Shift_JIS")
+        exchange.sendResponseHeaders(200, bytes.length.toLong)
+        val os = exchange.getResponseBody
+        os.write(bytes)
+        os.close()
       }
     )
     server.start()

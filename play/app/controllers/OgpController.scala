@@ -49,7 +49,7 @@ class OgpController(cc: ControllerComponents, ogpClient: OgpClient)
 
   private def validateUrl(raw: String): Option[String] =
     Try(URI.create(raw)).toOption
-      .filter(uri => uri.getHost != null)
+      .filter(_.getHost != null)
       .filter(uri => uri.getScheme == "http" || uri.getScheme == "https")
       .map(_.toString)
 

@@ -223,19 +223,20 @@ object ZioHttpMain extends ZIOAppDefault {
       |.back { margin-bottom: 14px; display: inline-block; }
       |""".stripMargin
 
-  private val routes = Routes(
-    Method.GET / Root -> Handler.fromZIO(listResponse()),
-    Method.GET / "api" / "ogp" ->
-      Handler.fromFunctionZIO[Request](request => ogpResponse(request)),
-    Method.GET / "assets" / trailing ->
-      Handler.fromFunction[(Path, Request)] { case (path, _) =>
-        staticAssetResponse(path.toString)
-      },
-    Method.GET / "blog" / trailing ->
-      Handler.fromFunctionZIO[(Path, Request)] { case (path, _) =>
-        showResponse(path.toString)
-      }
-  )
+  private val routes =
+    Routes(
+      Method.GET / Root -> Handler.fromZIO(listResponse()),
+      Method.GET / "api" / "ogp" ->
+        Handler.fromFunctionZIO[Request](request => ogpResponse(request)),
+      Method.GET / "assets" / trailing ->
+        Handler.fromFunction[(Path, Request)] { case (path, _) =>
+          staticAssetResponse(path.toString)
+        },
+      Method.GET / "blog" / trailing ->
+        Handler.fromFunctionZIO[(Path, Request)] { case (path, _) =>
+          showResponse(path.toString)
+        }
+    )
 
   private def listResponse(): ZIO[Any, Nothing, Response] = {
     ZIO
@@ -245,39 +246,40 @@ object ZioHttpMain extends ZIOAppDefault {
             .sortBy(row => row.publishedAt.orElse(row.modifiedAt))(using
               Ordering.Option[String].reverse
             )
-        val body = rows.map { row =>
-          val displayDate =
-            dateTime.format(row.publishedAt.orElse(row.modifiedAt))
-          val title =
-            if (row.title.nonEmpty) escape(row.title) else "(untitled)"
-          val draft =
-            if (row.publishedAt.isEmpty)
-              "<span class=\"draft\" title=\"Draft\">📝</span>"
-            else
-              ""
-          s"""
-               |<li class="post-item">
-               |  <a class="post-title" href="/blog/${escapeAttr(
-              row.stableId
-            )}">$draft$title</a>
-               |  <span class="post-date">${escape(displayDate)}</span>
-               |</li>
-               |""".stripMargin
-        }.mkString
+        val body =
+          rows.map { row =>
+            val displayDate =
+              dateTime.format(row.publishedAt.orElse(row.modifiedAt))
+            val title =
+              if (row.title.nonEmpty) escape(row.title) else "(untitled)"
+            val draft =
+              if (row.publishedAt.isEmpty)
+                "<span class=\"draft\" title=\"Draft\">📝</span>"
+              else
+                ""
+            s"""
+              |<li class="post-item">
+              |  <a class="post-title" href="/blog/${escapeAttr(
+                row.stableId
+              )}">$draft$title</a>
+              |  <span class="post-date">${escape(displayDate)}</span>
+              |</li>
+              |""".stripMargin
+          }.mkString
 
         htmlResponse(s"""
-             |<div class="container">
-             |  <header class="header">
-             |    <div class="title">Blog Viewer (ZIO HTTP)</div>
-             |    <div class="subtitle">Latest first</div>
-             |  </header>
-             |  <section class="card">
-             |    <ul class="post-list">
-             |      $body
-             |    </ul>
-             |  </section>
-             |</div>
-             |""".stripMargin)
+          |<div class="container">
+          |  <header class="header">
+          |    <div class="title">Blog Viewer (ZIO HTTP)</div>
+          |    <div class="subtitle">Latest first</div>
+          |  </header>
+          |  <section class="card">
+          |    <ul class="post-list">
+          |      $body
+          |    </ul>
+          |  </section>
+          |</div>
+          |""".stripMargin)
       }
       .sandbox
       .fold(
@@ -310,25 +312,25 @@ object ZioHttpMain extends ZIOAppDefault {
             else
               ""
           htmlResponse(s"""
-               |<div class="container">
-               |  <a class="back" href="/">Back</a>
-               |  <header class="header">
-               |    <div class="title">$draft$title</div>
-               |    <div class="subtitle">${escape(displayDate)}</div>
-               |  </header>
-               |  <section class="card post-body">
-               |    ${row.body}
-               |  </section>
-               |</div>
-               |<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-               |<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-               |<script>
-               |  if (window.mermaid) {
-               |    window.mermaid.initialize({ startOnLoad: true });
-               |  }
-               |</script>
-               |<script src="/assets/javascripts/blog-ogp.js"></script>
-              |""".stripMargin)
+            |<div class="container">
+            |  <a class="back" href="/">Back</a>
+            |  <header class="header">
+            |    <div class="title">$draft$title</div>
+            |    <div class="subtitle">${escape(displayDate)}</div>
+            |  </header>
+            |  <section class="card post-body">
+            |    ${row.body}
+            |  </section>
+            |</div>
+            |<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            |<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+            |<script>
+            |  if (window.mermaid) {
+            |    window.mermaid.initialize({ startOnLoad: true });
+            |  }
+            |</script>
+            |<script src="/assets/javascripts/blog-ogp.js"></script>
+            |""".stripMargin)
       }
       .sandbox
       .fold(
@@ -384,19 +386,19 @@ object ZioHttpMain extends ZIOAppDefault {
   private def htmlResponse(content: String): Response = {
     val html =
       s"""
-         |<!DOCTYPE html>
-         |<html lang="ja">
-         |  <head>
-         |    <meta charset="utf-8" />
-         |    <meta name="viewport" content="width=device-width, initial-scale=1" />
-         |    <title>Blog Viewer</title>
-         |    <style>$css</style>
-         |  </head>
-         |  <body data-ogp-endpoint="/api/ogp">
-         |    $content
-         |  </body>
-         |</html>
-         |""".stripMargin
+        |<!DOCTYPE html>
+        |<html lang="ja">
+        |  <head>
+        |    <meta charset="utf-8" />
+        |    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        |    <title>Blog Viewer</title>
+        |    <style>$css</style>
+        |  </head>
+        |  <body data-ogp-endpoint="/api/ogp">
+        |    $content
+        |  </body>
+        |</html>
+        |""".stripMargin
     Response(
       status = Status.Ok,
       headers = Headers(Header.ContentType(MediaType.text.html)),
@@ -907,12 +909,12 @@ object ZioHttpMain extends ZIOAppDefault {
     tagId: Long
   ): Unit = {
     Using.resource(conn.prepareStatement("""
-          |insert into blog_tags (blog_id, tag_id)
-          |select ?, ?
-          |where not exists (
-          |  select 1 from blog_tags where blog_id = ? and tag_id = ?
-          |)
-          |""".stripMargin)) { stmt =>
+      |insert into blog_tags (blog_id, tag_id)
+      |select ?, ?
+      |where not exists (
+      |  select 1 from blog_tags where blog_id = ? and tag_id = ?
+      |)
+      |""".stripMargin)) { stmt =>
       stmt.setLong(1, blogId)
       stmt.setLong(2, tagId)
       stmt.setLong(3, blogId)

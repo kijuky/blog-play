@@ -69,7 +69,8 @@ final class MyComponents(context: ApplicationLoader.Context)
       val grammars = {
         languages.flatMap(l =>
           services.GrammarSpec.from(l) match {
-            case Success(v) => Some(v)
+            case Success(v) =>
+              Some(v)
             case Failure(e) =>
               logger.error(s"Failed to parse tm4e grammar: $l", e)
               None

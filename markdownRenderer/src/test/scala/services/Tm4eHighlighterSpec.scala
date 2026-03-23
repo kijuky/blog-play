@@ -179,9 +179,8 @@ class Tm4eHighlighterSpec extends AnyFunSuite {
   }
 
   private def resourceUrl(name: String): URL = {
-    Option(getClass.getResource(resourcePath(name))).getOrElse {
-      fail(s"Test resource not found: $name")
-    }
+    Option(getClass.getResource(resourcePath(name)))
+      .getOrElse { fail(s"Test resource not found: $name") }
   }
 
   private def resourcePath(name: String): String = {

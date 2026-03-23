@@ -59,11 +59,8 @@ final class HttpOgpClient(
       response <- send(request)
       if response.statusCode() / 100 == 2
       document <- parseDocument(response, uri)
-      metadata = OgpMetadataParser.fromDocumentWithFallback(
-        document,
-        uri,
-        anchorText
-      )
+      metadata =
+        OgpMetadataParser.fromDocumentWithFallback(document, uri, anchorText)
       _ = logger.info(
         s"Ogp fetch url=$uri status=${response.statusCode()} title=${metadata.title} fallback=${metadata.fallback} image=${metadata.imageUrl.getOrElse("")}"
       )

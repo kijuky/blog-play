@@ -86,9 +86,9 @@ final class BlogImporter()(using zoneId: ZoneId) {
   )(using DBSession): Long = {
     val title = meta.title.getOrElse("")
     SQL("""
-        |insert into blogs (stable_id, title, body, published_at, modified_at, source)
-        |values (?, ?, ?, ?, ?, ?)
-        |""".stripMargin)
+      |insert into blogs (stable_id, title, body, published_at, modified_at, source)
+      |values (?, ?, ?, ?, ?, ?)
+      |""".stripMargin)
       .bind(
         stableId,
         title,
@@ -113,12 +113,12 @@ final class BlogImporter()(using zoneId: ZoneId) {
     tagId: Long
   )(using DBSession): Unit = {
     SQL("""
-        |insert into blog_tags (blog_id, tag_id)
-        |select ?, ?
-        |where not exists (
-        |  select 1 from blog_tags where blog_id = ? and tag_id = ?
-        |)
-        |""".stripMargin)
+      |insert into blog_tags (blog_id, tag_id)
+      |select ?, ?
+      |where not exists (
+      |  select 1 from blog_tags where blog_id = ? and tag_id = ?
+      |)
+      |""".stripMargin)
       .bind(blogId, tagId, blogId, tagId)
       .update
       .apply()

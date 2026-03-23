@@ -20,6 +20,7 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.nio.file.NoSuchFileException
 import java.util.Base64
+import java.util.Set as JSet
 import scala.annotation.nowarn
 import scala.io.Codec
 import scala.io.Source
@@ -127,9 +128,10 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
             }
             .foreach { imgUrl =>
               val bytes: Array[Byte] =
-                Using(imgUrl.openStream)(_.readAllBytes).getOrElse(
-                  throw NoSuchFileException(s"no such file: $imgUrl")
-                )
+                Using(imgUrl.openStream)(_.readAllBytes)
+                  .getOrElse(
+                    throw NoSuchFileException(s"no such file: $imgUrl")
+                  )
               val mime =
                 Option(imgUrl.openConnection.getContentType)
                   .getOrElse("application/octet-stream")
@@ -148,20 +150,20 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
     markdown: String,
     contentUrl: Option[URL]
   ): (String, Seq[(String, String)]) = {
-    val headerPattern =
-      raw"(?i)^\s*>\s*\*\*(Info|Warn|Alert):\*\*\s*$$".r
+    val headerPattern = raw"(?i)^\s*>\s*\*\*(Info|Warn|Alert):\*\*\s*$$".r
     val quoteLinePattern = raw"^\s*>\s?(.*)$$".r
 
     @annotation.tailrec
     def collectQuoteBody(
       remaining: List[String],
       acc: List[String]
-    ): (List[String], List[String]) = remaining match {
-      case quoteLinePattern(text) :: rest =>
-        collectQuoteBody(rest, text :: acc)
-      case _ =>
-        (remaining, acc.reverse)
-    }
+    ): (List[String], List[String]) =
+      remaining match {
+        case quoteLinePattern(text) :: rest =>
+          collectQuoteBody(rest, text :: acc)
+        case _ =>
+          (remaining, acc.reverse)
+      }
 
     @annotation.tailrec
     def loop(
@@ -169,26 +171,28 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
       nextIndex: Int,
       normalizedAcc: List[String],
       blockAcc: List[(String, String)]
-    ): (List[String], List[(String, String)]) = remaining match {
-      case Nil          => (normalizedAcc.reverse, blockAcc.reverse)
-      case line :: rest =>
-        line match {
-          case headerPattern(rawKind) =>
-            val (afterBody, bodyLines) = collectQuoteBody(rest, Nil)
-            val token = s"@@QIITA_QUOTED_NOTE_BLOCK_$nextIndex@@"
-            val kind = normalizeQiitaNoteKind(rawKind)
-            val bodyMarkdown = bodyLines.mkString("\n")
-            val blockHtml = renderNoteBlock(kind, bodyMarkdown, contentUrl)
-            loop(
-              afterBody,
-              nextIndex + 1,
-              token :: normalizedAcc,
-              (token, blockHtml) :: blockAcc
-            )
-          case _ =>
-            loop(rest, nextIndex, line :: normalizedAcc, blockAcc)
-        }
-    }
+    ): (List[String], List[(String, String)]) =
+      remaining match {
+        case Nil =>
+          (normalizedAcc.reverse, blockAcc.reverse)
+        case line :: rest =>
+          line match {
+            case headerPattern(rawKind) =>
+              val (afterBody, bodyLines) = collectQuoteBody(rest, Nil)
+              val token = s"@@QIITA_QUOTED_NOTE_BLOCK_$nextIndex@@"
+              val kind = normalizeQiitaNoteKind(rawKind)
+              val bodyMarkdown = bodyLines.mkString("\n")
+              val blockHtml = renderNoteBlock(kind, bodyMarkdown, contentUrl)
+              loop(
+                afterBody,
+                nextIndex + 1,
+                token :: normalizedAcc,
+                (token, blockHtml) :: blockAcc
+              )
+            case _ =>
+              loop(rest, nextIndex, line :: normalizedAcc, blockAcc)
+          }
+      }
 
     val (normalizedLines, blocks) =
       loop(markdown.linesIterator.toList, 0, Nil, Nil)
@@ -242,8 +246,8 @@ private final class CodeBlockNodeRenderer(
   context: HtmlNodeRendererContext,
   highlighter: CodeHighlighter
 ) extends NodeRenderer {
-  override def getNodeTypes: java.util.Set[Class[? <: Node]] =
-    java.util.Set.of(classOf[FencedCodeBlock])
+  override def getNodeTypes: JSet[Class[? <: Node]] =
+    JSet.of(classOf[FencedCodeBlock])
 
   override def render(node: Node): Unit =
     node match {
