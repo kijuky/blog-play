@@ -12,7 +12,10 @@ import zio.Task
 import zio.ZIO
 import zio.ZIOAppDefault
 import zio.http.Handler
+import zio.http.Header
+import zio.http.Headers
 import zio.http.Method
+import zio.http.MediaType
 import zio.http.Path
 import zio.http.Request
 import zio.http.Response
@@ -20,9 +23,12 @@ import zio.http.Root
 import zio.http.Routes
 import zio.http.Server
 import zio.http.Status
+import zio.http.Body
 import zio.http.codec.PathCodec.trailing
 
 import java.net.URL
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
@@ -198,10 +204,14 @@ object ZioHttpMain extends ZIOAppDefault {
              |</div>
              |""".stripMargin)
       }
-      .catchAll(err =>
-        ZIO.succeed(
-          Response.text(err.getMessage).status(Status.InternalServerError)
-        )
+      .sandbox
+      .fold(
+        cause => {
+          val details = formatFailure("listResponse", cause)
+          logger.error(details)
+          Response.text(details).status(Status.InternalServerError)
+        },
+        identity
       )
   }
 
@@ -240,13 +250,50 @@ object ZioHttpMain extends ZIOAppDefault {
                |    window.mermaid.initialize({ startOnLoad: true });
                |  }
                |</script>
-               |""".stripMargin)
+              |""".stripMargin)
       }
-      .catchAll(err =>
-        ZIO.succeed(
-          Response.text(err.getMessage).status(Status.InternalServerError)
-        )
+      .sandbox
+      .fold(
+        cause => {
+          val details = formatFailure(s"showResponse stableId=${stableId}", cause)
+          logger.error(details)
+          Response.text(details).status(Status.InternalServerError)
+        },
+        identity
       )
+  }
+
+  private def formatFailure(label: String, cause: zio.Cause[Throwable]): String = {
+    val throwableText = cause.failureOption
+      .orElse(cause.dieOption)
+      .map(renderThrowableChain)
+      .getOrElse(cause.prettyPrint)
+    s"${label} failed\n${throwableText}"
+  }
+
+  private def renderThrowableChain(throwable: Throwable): String = {
+    val chain = Iterator
+      .iterate(Option(throwable))(_.flatMap(t => Option(t.getCause)))
+      .takeWhile(_.nonEmpty)
+      .flatten
+      .toSeq
+    val header =
+      chain.zipWithIndex
+        .map { case (t, index) =>
+          val message = Option(t.getMessage).getOrElse("")
+          s"#${index} ${t.getClass.getName}${if (message.nonEmpty) s": ${message}" else ""}"
+        }
+        .mkString("\n")
+    val stack = stackTrace(throwable)
+    s"${header}\n\n${stack}"
+  }
+
+  private def stackTrace(throwable: Throwable): String = {
+    val writer = new StringWriter()
+    val printer = new PrintWriter(writer)
+    throwable.printStackTrace(printer)
+    printer.flush()
+    writer.toString
   }
 
   private def htmlResponse(content: String): Response = {
@@ -265,7 +312,11 @@ object ZioHttpMain extends ZIOAppDefault {
          |  </body>
          |</html>
          |""".stripMargin
-    Response.html(html)
+    Response(
+      status = Status.Ok,
+      headers = Headers(Header.ContentType(MediaType.text.html)),
+      body = Body.fromString(html)
+    )
   }
 
   private def escape(value: String): String = {
@@ -282,8 +333,9 @@ object ZioHttpMain extends ZIOAppDefault {
   private def initRenderer(): MarkdownRenderer = {
     val classLoader = Thread.currentThread.getContextClassLoader
     val languages =
-      Using(Source.fromResource("tm4e-lang.txt"))(_.getLines.map(x => s"/$x"))
-        .fold(throw _, _.toSeq)
+      Using(Source.fromResource("tm4e-lang.txt"))(
+        _.getLines.toSeq
+      ).fold(throw _, identity)
 
     val grammars =
       languages.flatMap(language =>
@@ -306,10 +358,10 @@ object ZioHttpMain extends ZIOAppDefault {
 
   private def initDbAndImport(): Unit = {
     val db = config.getConfig("db.default")
-    val driver = db.getString("driver")
-    val url = db.getString("url")
-    val user = if (db.hasPath("user")) db.getString("user") else "sa"
-    val password = if (db.hasPath("password")) db.getString("password") else ""
+    val driver = readRequiredString(db, Seq("driverClassName", "driver"))
+    val url = readRequiredString(db, Seq("jdbcUrl", "url"))
+    val user = readOptionalString(db, Seq("username", "user"))
+    val password = if (db.hasPath("password")) Option(db.getString("password")) else None
     Class.forName(driver)
 
     val renderer = initRenderer()
@@ -327,8 +379,8 @@ object ZioHttpMain extends ZIOAppDefault {
 
       val metaUrls =
         Using(Source.fromResource("blog.txt"))(
-          _.getLines.map(getClass.getClassLoader.getResource)
-        ).fold(throw _, _.toSeq)
+          _.getLines.map(getClass.getClassLoader.getResource).toSeq
+        ).fold(throw _, identity)
 
       metaUrls.foreach(metaUrl =>
         importOne(conn, metaUrl, renderer)
@@ -533,10 +585,39 @@ object ZioHttpMain extends ZIOAppDefault {
       })
   }
 
-  private def withConnection[A](url: String, user: String, password: String)(
+  private def withConnection[A](
+    url: String,
+    user: Option[String],
+    password: Option[String]
+  )(
     f: Connection => A
   ): A = {
-    Using.resource(DriverManager.getConnection(url, user, password))(f)
+    val connection =
+      user match {
+        case Some(u) =>
+          DriverManager.getConnection(url, u, password.getOrElse(""))
+        case None =>
+          DriverManager.getConnection(url)
+      }
+    Using.resource(connection)(f)
+  }
+
+  private def readRequiredString(
+    db: com.typesafe.config.Config,
+    paths: Seq[String]
+  ): String = {
+    paths.collectFirst {
+      case path if db.hasPath(path) => db.getString(path)
+    }.getOrElse(throw RuntimeException(s"Missing config: one of ${paths.mkString(", ")}"))
+  }
+
+  private def readOptionalString(
+    db: com.typesafe.config.Config,
+    paths: Seq[String]
+  ): Option[String] = {
+    paths.collectFirst {
+      case path if db.hasPath(path) => db.getString(path)
+    }.filter(_.nonEmpty)
   }
 
   override def run: Task[Unit] = {

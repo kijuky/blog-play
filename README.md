@@ -37,7 +37,7 @@ mise run play:run
 
 ### 2. Play / Docker
 
-Docker上でProdモードで起動します。事前にdockerのインストールが必要です。
+Docker上でProdモードで起動します。事前にdockerのインストールと`.env`の作成が必要です。
 
 ```shell
 cp play/.env.example play/.env
@@ -48,9 +48,10 @@ mise run play:docker:up
 
 ### 3. Play / Native Image
 
-GraalVMでビルドしてJVMに依存せずに起動します。事前にdockerのインストールが必要です。
+GraalVMでビルドしてJVMに依存せずに起動します。事前にdockerのインストールと`.env`の作成が必要です。
 
 ```shell
+cp play/.env.example play/.env
 mise run play:graalvm:up
 ```
 

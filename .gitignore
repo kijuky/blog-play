@@ -2,6 +2,7 @@
 .DS_Store
 
 # SBT / Play
+.sbt
 target/
 project/target/
 project/project/

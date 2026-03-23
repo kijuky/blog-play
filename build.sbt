@@ -150,6 +150,7 @@ lazy val zio =
       // libraries
       libraryDependencies ++= Seq(
         "com.h2database" % "h2" % "2.4.240",
+        "ch.qos.logback" % "logback-classic" % "1.5.32",
         "com.typesafe" % "config" % "1.4.6",
         "dev.zio" %% "zio-http" % "3.10.1",
         "io.getquill" %% "quill-jdbc" % "4.8.6",
