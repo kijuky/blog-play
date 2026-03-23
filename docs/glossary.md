@@ -12,7 +12,7 @@
 
 ## Blog Root
 
-取り込み対象ディレクトリのルート。通常は `blog`。
+取り込み対象ディレクトリのルート。通常は [`blog`](../blog/src/main/resources/blog)。
 
 ## meta.yaml
 

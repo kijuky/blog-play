@@ -927,9 +927,7 @@ object ZioHttpMain extends ZIOAppDefault {
       .split(";")
       .map(_.trim)
       .filter(_.nonEmpty)
-      .foreach(sql =>
-        Using.resource(conn.prepareStatement(sql))(_.execute())
-      )
+      .foreach(sql => Using.resource(conn.prepareStatement(sql))(_.execute()))
   }
 
   private def withConnection[A](

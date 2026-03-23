@@ -1,11 +1,28 @@
+# OS
 .DS_Store
-.bsp
-.idea
-target
 
+# Scala/SBT
+.bsp/
+.coursier/
+.sbt/
+target/
+project/project/
+
+# IDE
+.idea/
+.vscode/
+
+# Env
 .env*
+
+# DB
+play/data/*.db
+zio/data/*.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
 Dockerfile*
 compose*.yaml
-
-play/data/*
-!play/data/.gitkeep
