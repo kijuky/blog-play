@@ -1,6 +1,7 @@
 @import play.api.i18n.Messages
 @import play.api.mvc.RequestHeader
 @(post: controllers.BlogItem)(using request: RequestHeader, messages: Messages)
+
 @defining(routes.OgpController.fetch(url = "https://example.invalid", text = None).path.takeWhile(_ != '?')) { ogpEndpoint =>
   <!DOCTYPE html>
   <html lang="ja">
@@ -8,7 +9,7 @@
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>@if(post.title.nonEmpty) { @post.title } else { @messages("blog.untitled") }</title>
-    <link rel="icon" type="image/svg+xml" href="@routes.Assets.versioned("images/favicon.svg")" />
+      <link rel="icon" type="image/svg+xml" href="@routes.Assets.versioned("images/favicon.svg")" />
       <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" />
     </head>
     <body data-ogp-endpoint="@ogpEndpoint">
