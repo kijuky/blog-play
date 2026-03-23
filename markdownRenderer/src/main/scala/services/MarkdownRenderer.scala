@@ -170,7 +170,7 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
       normalizedAcc: List[String],
       blockAcc: List[(String, String)]
     ): (List[String], List[(String, String)]) = remaining match {
-      case Nil => (normalizedAcc.reverse, blockAcc.reverse)
+      case Nil          => (normalizedAcc.reverse, blockAcc.reverse)
       case line :: rest =>
         line match {
           case headerPattern(rawKind) =>
@@ -179,13 +179,19 @@ final class MarkdownRendererImpl(highlighter: Option[CodeHighlighter] = None)
             val kind = normalizeQiitaNoteKind(rawKind)
             val bodyMarkdown = bodyLines.mkString("\n")
             val blockHtml = renderNoteBlock(kind, bodyMarkdown, contentUrl)
-            loop(afterBody, nextIndex + 1, token :: normalizedAcc, (token, blockHtml) :: blockAcc)
+            loop(
+              afterBody,
+              nextIndex + 1,
+              token :: normalizedAcc,
+              (token, blockHtml) :: blockAcc
+            )
           case _ =>
             loop(rest, nextIndex, line :: normalizedAcc, blockAcc)
         }
     }
 
-    val (normalizedLines, blocks) = loop(markdown.linesIterator.toList, 0, Nil, Nil)
+    val (normalizedLines, blocks) =
+      loop(markdown.linesIterator.toList, 0, Nil, Nil)
     (normalizedLines.mkString("\n"), blocks)
   }
 

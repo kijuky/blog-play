@@ -154,6 +154,7 @@ lazy val zio =
         "com.typesafe" % "config" % "1.4.6",
         "dev.zio" %% "zio-http" % "3.10.1",
         "io.getquill" %% "quill-jdbc" % "4.8.6",
+        "org.jsoup" % "jsoup" % "1.22.1",
         "org.slf4j" % "slf4j-api" % "2.0.17",
         "org.virtuslab" %% "scala-yaml" % "0.3.1"
       )
