@@ -280,7 +280,25 @@
       ]
     },
     {
+      "type": "com.sun.crypto.provider.TlsKeyMaterialGenerator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.sun.crypto.provider.TlsMasterSecretGenerator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.TlsPrfGenerator$V12",
       "methods": [
         {
           "name": "<init>",
@@ -368,6 +386,14 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "controllers.AssetInfo",
+      "fields": [
+        {
+          "name": "parsedLastModified$lzy1"
         }
       ]
     },
@@ -1864,6 +1890,37 @@
       ]
     },
     {
+      "type": "play.api.http.AcceptEncoding$$anon$2",
+      "fields": [
+        {
+          "name": "identityAllowed$lzy1"
+        },
+        {
+          "name": "preferences$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "play.api.http.AcceptEncoding$AcceptEncodingParser$",
+      "fields": [
+        {
+          "name": "$tilde$lzy1"
+        },
+        {
+          "name": "Error$lzy1"
+        },
+        {
+          "name": "Failure$lzy1"
+        },
+        {
+          "name": "NoSuccess$lzy1"
+        },
+        {
+          "name": "Success$lzy1"
+        }
+      ]
+    },
+    {
       "type": "play.api.http.DefaultFileMimeTypesProvider",
       "fields": [
         {
@@ -3010,6 +3067,15 @@
       ]
     },
     {
+      "type": "sun.security.rsa.RSASignature$SHA384withRSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.security.ssl.KeyManagerFactoryImpl$SunX509",
       "methods": [
         {
@@ -3133,6 +3199,18 @@
       ]
     },
     {
+      "type": "sun.security.x509.OCSPNoCheckExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
       "type": "sun.security.x509.PrivateKeyUsageExtension",
       "methods": [
         {
@@ -3173,6 +3251,15 @@
     },
     {
       "type": "sun.text.resources.BreakIteratorResources"
+    },
+    {
+      "type": "sun.text.resources.FormatData"
+    },
+    {
+      "type": "sun.text.resources.FormatData_en"
+    },
+    {
+      "type": "sun.text.resources.JavaTimeSupplementary"
     },
     {
       "type": "sun.text.resources.cldr.FormatData"
@@ -7659,6 +7746,60 @@
       "glob": "blog/00_archive/wordpress/01_テストタイトル/meta.yaml"
     },
     {
+      "glob": "blog/01_test/README.md"
+    },
+    {
+      "glob": "blog/01_test/meta.yaml"
+    },
+    {
+      "glob": "blog/02_codexでブログ記事を書いてみた/README.md"
+    },
+    {
+      "glob": "blog/02_codexでブログ記事を書いてみた/meta.yaml"
+    },
+    {
+      "glob": "blog/03_家庭内SRE_証明書切り替え忘れ防止メモ/README.md"
+    },
+    {
+      "glob": "blog/03_家庭内SRE_証明書切り替え忘れ防止メモ/meta.yaml"
+    },
+    {
+      "glob": "blog/04_proxmoxインストール/README.md"
+    },
+    {
+      "glob": "blog/04_proxmoxインストール/meta.yaml"
+    },
+    {
+      "glob": "blog/05_proxmoxハードウェアの選定/README.md"
+    },
+    {
+      "glob": "blog/05_proxmoxハードウェアの選定/meta.yaml"
+    },
+    {
+      "glob": "blog/06_proxmoxに接続するときはIP直打ちがよい/README.md"
+    },
+    {
+      "glob": "blog/06_proxmoxに接続するときはIP直打ちがよい/meta.yaml"
+    },
+    {
+      "glob": "blog/07_proxmoxの記事/README.md"
+    },
+    {
+      "glob": "blog/07_proxmoxの記事/meta.yaml"
+    },
+    {
+      "glob": "blog/08_pre-commitフックを追加した/README.md"
+    },
+    {
+      "glob": "blog/08_pre-commitフックを追加した/meta.yaml"
+    },
+    {
+      "glob": "blog/09_blog-playが形になってきた/README.md"
+    },
+    {
+      "glob": "blog/09_blog-playが形になってきた/meta.yaml"
+    },
+    {
       "glob": "com/fasterxml/jackson/module/scala/build.properties"
     },
     {
@@ -7722,7 +7863,22 @@
       "glob": "public/javascripts/blog-ogp-min.js"
     },
     {
+      "glob": "public/javascripts/blog-ogp.js"
+    },
+    {
+      "glob": "public/javascripts/blog-ogp.js.br"
+    },
+    {
+      "glob": "public/javascripts/blog-ogp.js.bz2"
+    },
+    {
+      "glob": "public/javascripts/blog-ogp.js.gz"
+    },
+    {
       "glob": "public/javascripts/blog-ogp.js.md5"
+    },
+    {
+      "glob": "public/javascripts/blog-ogp.js.xz"
     },
     {
       "glob": "public/javascripts/blog-ogp.min.js"
@@ -7731,7 +7887,22 @@
       "glob": "public/lib/mermaid/dist/mermaid.min-min.js"
     },
     {
+      "glob": "public/lib/mermaid/dist/mermaid.min.js"
+    },
+    {
+      "glob": "public/lib/mermaid/dist/mermaid.min.js.br"
+    },
+    {
+      "glob": "public/lib/mermaid/dist/mermaid.min.js.bz2"
+    },
+    {
+      "glob": "public/lib/mermaid/dist/mermaid.min.js.gz"
+    },
+    {
       "glob": "public/lib/mermaid/dist/mermaid.min.js.md5"
+    },
+    {
+      "glob": "public/lib/mermaid/dist/mermaid.min.js.xz"
     },
     {
       "glob": "public/lib/mermaid/dist/mermaid.min.min.js"
