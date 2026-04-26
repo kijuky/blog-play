@@ -58,12 +58,12 @@ final class MyComponents(context: ApplicationLoader.Context)
   DB.localTx { case given DBSession =>
     val metaURLs = {
       Using(Source.fromResource("blog.txt"))(
-        _.getLines.map(getClass.getClassLoader.getResource).toSeq
+        _.getLines().map(getClass.getClassLoader.getResource).toSeq
       ).fold(throw _, identity)
     }
     val markdownRenderer = {
       val languages = {
-        Using(Source.fromResource("tm4e-lang.txt"))(_.getLines.toSeq)
+        Using(Source.fromResource("tm4e-lang.txt"))(_.getLines().toSeq)
           .fold(throw _, identity)
       }
       val grammars = {

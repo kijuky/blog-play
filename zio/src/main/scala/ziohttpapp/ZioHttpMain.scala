@@ -682,7 +682,7 @@ object ZioHttpMain extends ZIOAppDefault {
   private def initRenderer(): MarkdownRenderer = {
     val classLoader = Thread.currentThread.getContextClassLoader
     val languages =
-      Using(Source.fromResource("tm4e-lang.txt"))(_.getLines.toSeq)
+      Using(Source.fromResource("tm4e-lang.txt"))(_.getLines().toSeq)
         .fold(throw _, identity)
 
     val grammars =
@@ -728,7 +728,7 @@ object ZioHttpMain extends ZIOAppDefault {
 
       val metaUrls =
         Using(Source.fromResource("blog.txt"))(
-          _.getLines.map(getClass.getClassLoader.getResource).toSeq
+          _.getLines().map(getClass.getClassLoader.getResource).toSeq
         ).fold(throw _, identity)
 
       metaUrls.foreach(metaUrl =>

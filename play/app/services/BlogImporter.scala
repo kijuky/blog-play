@@ -126,7 +126,7 @@ final class BlogImporter()(using zoneId: ZoneId) {
 
   private def readMeta(metaUrl: URL): Either[ImportError, Meta] = {
     Using(Source.fromURL(metaUrl))(
-      _.getLines
+      _.getLines()
         .mkString("\n")
         .as[Meta]
         .left

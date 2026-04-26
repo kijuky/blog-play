@@ -33,7 +33,7 @@ class BlogImporterSpec
   override def beforeEach(): Unit = {
     DB.autoCommit { case given DBSession =>
       Using(Source.fromURL(initSqlUrl))(
-        _.getLines
+        _.getLines()
           .mkString("\n")
           .split(";")
           .map(_.trim)

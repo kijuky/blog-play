@@ -10,7 +10,7 @@ import scala.util.Using
 
 object DbInitializer {
   def initFromResource(sqlUrl: URL): Unit = {
-    Using(Source.fromURL(sqlUrl))(_.getLines.mkString("\n"))
+    Using(Source.fromURL(sqlUrl))(_.getLines().mkString("\n"))
       .foreach(initFromSql)
   }
 

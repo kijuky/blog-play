@@ -47,7 +47,7 @@ trait MarkdownRenderer {
     contentUrl: URL
   )(using codec: Codec): Either[MarkdownRenderer.RendererError, String] =
     Using(Source.fromURL(contentUrl)) { contents =>
-      render(contents.getLines.mkString("\n"), Some(contentUrl))
+      render(contents.getLines().mkString("\n"), Some(contentUrl))
     }.toEither.left.map(MarkdownRenderer.RendererError.IoError(contentUrl, _))
 
   def render(markdown: String): String =
