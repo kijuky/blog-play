@@ -1,7 +1,7 @@
 import java.nio.charset.StandardCharsets
 
 ThisBuild / organization := "io.github.kijuky"
-ThisBuild / scalaVersion := "3.8.2"
+ThisBuild / scalaVersion := "3.8.3"
 
 lazy val blog =
   project
@@ -52,13 +52,13 @@ lazy val markdownRenderer =
       libraryDependencies ++=
         Seq(
           "com.typesafe" % "config" % "1.4.6",
-          "org.commonmark" % "commonmark" % "0.27.1",
-          "org.commonmark" % "commonmark-ext-autolink" % "0.27.1",
-          "org.commonmark" % "commonmark-ext-gfm-tables" % "0.27.1",
+          "org.commonmark" % "commonmark" % "0.28.0",
+          "org.commonmark" % "commonmark-ext-autolink" % "0.28.0",
+          "org.commonmark" % "commonmark-ext-gfm-tables" % "0.28.0",
           "org.eclipse" % "org.eclipse.tm4e.core" % "0.17.2-SNAPSHOT",
           "org.jruby.joni" % "joni" % "2.2.7" % Runtime,
           "org.jruby.jcodings" % "jcodings" % "1.0.64" % Runtime,
-          "org.scalatest" %% "scalatest-funsuite" % "3.2.19" % Test,
+          "org.scalatest" %% "scalatest-funsuite" % "3.2.20" % Test,
           "org.slf4j" % "slf4j-api" % "2.0.17"
         ),
 
@@ -106,12 +106,12 @@ lazy val play =
         Seq(
           filters,
           "com.h2database" % "h2" % "2.4.240",
-          "org.jsoup" % "jsoup" % "1.22.1",
-          "org.scalatest" %% "scalatest-funsuite" % "3.2.19" % Test,
+          "org.jsoup" % "jsoup" % "1.22.2",
+          "org.scalatest" %% "scalatest-funsuite" % "3.2.20" % Test,
           "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
           "org.scalikejdbc" %% "scalikejdbc-config" % "4.3.5",
           "org.virtuslab" %% "scala-yaml" % "0.3.1",
-          "org.webjars.npm" % "mermaid" % "11.12.3"
+          "org.webjars.npm" % "mermaid" % "11.2.1"
         ),
 
       // pipeline
@@ -160,9 +160,9 @@ lazy val zio =
         Seq(
           "ch.qos.logback" % "logback-classic" % "1.5.32",
           "com.h2database" % "h2" % "2.4.240",
-          "dev.zio" %% "zio-http" % "3.10.1",
+          "dev.zio" %% "zio-http" % "3.11.0",
           "io.getquill" %% "quill-jdbc" % "4.8.6",
-          "org.jsoup" % "jsoup" % "1.22.1",
+          "org.jsoup" % "jsoup" % "1.22.2",
           "org.slf4j" % "slf4j-api" % "2.0.17",
           "org.virtuslab" %% "scala-yaml" % "0.3.1"
         )

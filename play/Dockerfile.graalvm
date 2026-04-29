@@ -1,5 +1,5 @@
-FROM sbtscala/scala-sbt:graalvm-community-25.0.1_1.12.6_3.8.2 AS build
-RUN microdnf -y install nodejs-1:22.22.0-3.el10_1
+FROM sbtscala/scala-sbt:graalvm-community-25.0.1_1.12.9_3.8.3 AS build
+RUN microdnf -y install nodejs-1:22.22.2
 COPY ./ /app/
 WORKDIR /app
 
